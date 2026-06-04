@@ -1,0 +1,17 @@
+# Local Datasets, Checkpoints, and Images
+data/
+ckpt/
+images/
+
+# Python Cache Files
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Environment & IDE settings
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo

@@ -1,0 +1,29 @@
+# Big Files & Datasets
+train_patch.tar
+metadata.json
+D3Net/data/
+D3Net/ckpt/
+D3Net/images/
+
+# Python Cache
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.ipynb_checkpoints/
+.pytest_cache/
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+lib/
+lib64/
