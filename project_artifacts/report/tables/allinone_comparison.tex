@@ -1,17 +1,16 @@
-\begin{table}[H]
+\begin{table}[t]
 \centering
-\caption{Reference comparison with existing all-in-one restoration models reported in the original D3Net paper \cite{wang2025d3net}. The benchmark averages five restoration tasks (Rain100L, SOTS, BSD68, GoPro, LOL), so it is not directly comparable to our SIDL validation numbers.}
+\caption{D3Net backbone selection context from the original D3Net paper \cite{wang2025d3net}. This table is \emph{not} used as a SIDL performance comparison; it only motivates D3Net as a degradation-adaptive all-in-one backbone.}
 \label{tab:allinone_context}
 \small
-\begin{tabularx}{\linewidth}{l c c c X}
+\begin{tabularx}{\linewidth}{l c c X}
 \toprule
-Method & Avg. PSNR & Avg. SSIM & Params / FLOPs & Interpretation \\
+Method & Params / FLOPs & Avg. PSNR & Why it matters for backbone selection \\
 \midrule
-AirNet & 25.49 & 0.846 & 8.93M / 75.32G & Contrastive/degradation-aware all-in-one baseline. \\
-PromptIR & 27.57 & 0.881 & 32.97M / 370.64G & Prompt-based restoration with high computational cost. \\
-IDR & 28.34 & 0.893 & 15.34M / -- & Ingredient-oriented multi-degradation formulation. \\
-InstructIR & 29.55 & 0.907 & 15.84M / 37.95G & Text-instructed restoration; depends on predefined instructions. \\
-D3Net & \textbf{32.36} & 0.901 & 37.80M / 33.67G & Frequency-domain CDDA + dynamic decomposition; selected as the SIDL adaptation backbone. \\
+AirNet & 8.93M / 75.32G & 25.49 & Contrastive degradation-aware all-in-one baseline. \\
+PromptIR & 32.97M / 370.64G & 27.57 & Prompt-based restoration but computationally heavy. \\
+InstructIR & 15.84M / 37.95G & 29.55 & Instruction-based restoration; depends on predefined degradation instructions. \\
+D3Net & 37.80M / 33.67G & \textbf{32.36} & Uses frequency-domain CDDA prompts and dynamic degradation decomposition; selected for SIDL adaptation. \\
 \bottomrule
 \end{tabularx}
 \end{table}
