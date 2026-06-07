@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{SIDL paper baseline context for all-in-one models trained on SIDL. AirNet and DiffUIR are included because they were evaluated as all-in-one restoration models on SIDL. Values are reported as PSNR/SSIM for each contamination type and difficulty in the SIDL paper; they are provided as task context rather than a strict split-identical comparison with our validation experiment.}
+\label{tab:sidl_airnet_diffuir}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllccccccc}
+\toprule
+Family & Method & Level & Clean & Dust & Fingerprint & Water & Scratch & Mixed & Average \\
+\midrule
+\multirow{3}{*}{CNN} & \multirow{3}{*}{AirNet} 
+& Easy   & 27.10/0.9329 & 23.40/0.8669 & 25.10/0.8708 & 24.85/0.8658 & 25.84/0.8917 & 25.30/0.8422 & 25.26/0.8784 \\
+& & Medium & 26.13/0.8899 & 19.69/0.7577 & 22.53/0.8191 & 20.36/0.7656 & 21.24/0.8051 & 16.79/0.7542 & 21.12/0.7986 \\
+& & Hard   & 23.79/0.8527 & 16.18/0.7350 & 15.83/0.6432 & 16.64/0.7449 & 18.13/0.7975 & 14.48/0.7047 & 17.50/0.7463 \\
+\midrule
+\multirow{3}{*}{Diffusion} & \multirow{3}{*}{DiffUIR}
+& Easy   & 34.51/0.9785 & 26.96/0.9276 & 28.82/0.9331 & 27.42/0.9220 & 30.14/0.9375 & 28.22/0.9021 & 29.34/0.9335 \\
+& & Medium & 33.25/0.9375 & 22.11/0.8325 & 26.16/0.8856 & 24.65/0.8647 & 27.07/0.9105 & 20.32/0.8368 & 25.36/0.8786 \\
+& & Hard   & 29.47/0.9366 & 20.38/0.8602 & 18.93/0.7763 & 19.91/0.8500 & 21.27/0.8599 & 18.97/0.8409 & 21.71/0.8533 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
