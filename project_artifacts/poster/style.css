@@ -23,7 +23,7 @@ body {
 
 .poster {
   width: 1760px;
-  min-height: 2260px;
+  min-height: 2500px;
   margin: 28px auto;
   padding: 58px 62px;
   background: var(--paper);
@@ -51,8 +51,8 @@ body {
 
 h1 {
   margin: 0;
-  max-width: 1060px;
-  font-size: 58px;
+  max-width: 1120px;
+  font-size: 56px;
   line-height: 1.08;
   letter-spacing: 0;
 }
@@ -205,13 +205,22 @@ th {
   text-transform: uppercase;
 }
 
+.baseline-table {
+  font-size: 13px;
+}
+
+.baseline-table th,
+.baseline-table td {
+  padding: 6px 4px;
+}
+
 .highlight-row {
   background: var(--accent-soft);
 }
 
 .setup-list {
   display: grid;
-  grid-template-columns: 128px 1fr;
+  grid-template-columns: 118px 1fr;
   gap: 8px 16px;
   margin: 0;
 }
@@ -237,16 +246,16 @@ th {
   object-fit: contain;
 }
 
-.qualitative img {
-  width: 100%;
-  height: 390px;
-  object-fit: contain;
-}
-
-.caption {
+.caption,
+.small-note {
   color: var(--muted);
   font-size: 16px;
   margin-top: 8px;
+}
+
+.small-note {
+  font-size: 15px;
+  line-height: 1.35;
 }
 
 .bar-chart {
@@ -306,8 +315,62 @@ th {
   font-weight: 650;
 }
 
+.wide-results {
+  margin-top: 32px;
+  border-top: 8px solid var(--accent);
+  padding-top: 20px;
+}
+
+.qualitative-wide {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.wide-heading {
+  display: grid;
+  grid-template-columns: 1fr 430px;
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.wide-heading h2 {
+  font-size: 32px;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.legend span {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  padding: 8px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.qualitative-crop {
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.qualitative-crop img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: translateY(-4%);
+}
+
 @page {
-  size: 1760px 2260px;
+  size: 1760px 2500px;
   margin: 0;
 }
 
@@ -320,7 +383,7 @@ th {
   .poster {
     margin: 0;
     width: 1760px;
-    min-height: 2260px;
+    min-height: 2500px;
     box-shadow: none;
   }
 }
