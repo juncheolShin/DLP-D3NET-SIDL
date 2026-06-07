@@ -30,7 +30,7 @@
         </div>
         <div class="stat-panel">
           <strong>SIDL task</strong>
-          <span>512×512 paired patches</span>
+          <span>512×512 patchified image pairs</span>
           <span>6 contamination types</span>
           <span>Easy / Medium / Hard difficulty</span>
         </div>
@@ -38,25 +38,26 @@
     </section>
 
     <section class="slide">
-      <p class="eyebrow">Why D3Net?</p>
-      <h2>Original all-in-one benchmark motivates D3Net as the backbone</h2>
-      <div class="comparison-grid">
+      <p class="eyebrow">SIDL Baseline Context</p>
+      <h2>All-in-one SIDL baselines show severe degradation remains difficult</h2>
+      <div class="comparison-grid wide-comparison">
         <table>
-          <thead><tr><th>Method</th><th>Avg. PSNR</th><th>Params</th><th>FLOPs</th></tr></thead>
+          <thead><tr><th>Method</th><th>Easy</th><th>Medium</th><th>Hard</th><th>Avg.</th></tr></thead>
           <tbody>
-            <tr><td>AirNet</td><td>25.49</td><td>8.93M</td><td>75.32G</td></tr>
-            <tr><td>PromptIR</td><td>27.57</td><td>32.97M</td><td>370.64G</td></tr>
-            <tr><td>IDR</td><td>28.34</td><td>15.34M</td><td>-</td></tr>
-            <tr><td>InstructIR</td><td>29.55</td><td>15.84M</td><td>37.95G</td></tr>
-            <tr class="best"><td>D3Net</td><td>32.36</td><td>37.80M</td><td>33.67G</td></tr>
+            <tr><td>AirNet</td><td>25.26</td><td>21.12</td><td>17.50</td><td>21.29</td></tr>
+            <tr><td>NAFNet</td><td>27.22</td><td>24.53</td><td>20.51</td><td>24.09</td></tr>
+            <tr><td>Restormer</td><td>28.06</td><td>26.06</td><td>22.09</td><td>25.40</td></tr>
+            <tr><td>FFTformer</td><td>25.86</td><td>23.78</td><td>19.80</td><td>23.15</td></tr>
+            <tr class="best"><td>DiffUIR</td><td>29.34</td><td>28.36</td><td>21.71</td><td>26.47</td></tr>
+            <tr><td>MambaIR</td><td>28.78</td><td>26.40</td><td>22.51</td><td>25.90</td></tr>
           </tbody>
         </table>
         <div class="compare-notes">
-          <strong>Key idea</strong>
+          <strong>Why D3Net?</strong>
+          <span>All-in-one restoration backbone</span>
           <span>Frequency-domain degradation cue</span>
-          <span>Cross-domain prompts</span>
-          <span>Dynamic decomposition blocks</span>
-          <small>Numbers are from the original D3Net five-task benchmark, not from SIDL validation.</small>
+          <span>Dynamic degradation decomposition</span>
+          <small>Baseline values are from the SIDL paper/test setting. They are task context, not a direct validation-split comparison with our scratch run.</small>
         </div>
       </div>
     </section>
@@ -65,28 +66,28 @@
       <p class="eyebrow">Method Overview</p>
       <h2>D3Net: CDDA prompts + dynamic degradation decomposition</h2>
       <img src="assets/d3net_architecture_paper.png" alt="D3Net architecture from original paper">
-      <p class="caption">Original D3Net architecture figure from Wang et al., arXiv:2502.19068. In this project, the predicted residual is added to the dirty input for final restoration.</p>
+      <p class="caption">D3Net predicts a residual correction. Inference output is restored image = dirty input + predicted residual.</p>
     </section>
 
     <section class="slide figure-slide ddm-slide">
       <p class="eyebrow">Dynamic Block</p>
       <h2>DUs select whether ADBs should process degradation-aware features</h2>
       <img src="assets/d3net_ddm_paper.png" alt="D3Net dynamic decomposition mechanism">
-      <p class="caption">DDM lets the model adjust the feature-processing path for mixed or local contamination patterns.</p>
+      <p class="caption">Decision Units conditionally activate Adaptive Decomposition Blocks to adapt the processing path to local and mixed contamination patterns.</p>
     </section>
 
-    <section class="slide">
+    <section class="slide setup-slide">
       <p class="eyebrow">Experimental Setup</p>
-      <h2>Controlled main run on SIDL validation split</h2>
-      <div class="setup-grid">
-        <div><strong>Model</strong><span>D3Net, scratch training</span></div>
-        <div><strong>Dataset</strong><span>SIDL 512×512 patchified pairs</span></div>
-        <div><strong>Main crop</strong><span>256×256 random crop</span></div>
-        <div><strong>Validation</strong><span>512×512 PSNR / SSIM</span></div>
-        <div><strong>Hardware</strong><span>RTX 4090</span></div>
-        <div><strong>Constraint</strong><span>Limited compute budget</span></div>
+      <h2>Controlled scratch training on SIDL validation split</h2>
+      <div class="setup-grid detailed">
+        <div><strong>Train data</strong><span>SIDL 512×512 patchified degraded-clean pairs</span></div>
+        <div><strong>Train crop</strong><span>256×256 random crop from 512 patch</span></div>
+        <div><strong>Validation</strong><span>512×512 center crop, PSNR / SSIM</span></div>
+        <div><strong>Model</strong><span>D3Net, 12 ADB blocks, residual output</span></div>
+        <div><strong>Optimization</strong><span>L1 loss, Adam, cosine LR, scratch training</span></div>
+        <div><strong>Hardware</strong><span>Single RTX 4090, limited class-project budget</span></div>
       </div>
-      <p class="note">This is an adaptation study, not a claim of SIDL SOTA.</p>
+      <p class="note">This is an adaptation and ablation study, not a SIDL SOTA claim.</p>
     </section>
 
     <section class="slide">
@@ -133,6 +134,15 @@
       </div>
     </section>
 
+    <section class="slide qualitative-slide">
+      <p class="eyebrow">Qualitative Results</p>
+      <h2>Restoration examples should be inspected at a large scale</h2>
+      <div class="qualitative-panel">
+        <img src="assets/qualitative_grid_placeholder.png" alt="SIDL qualitative result grid enlarged">
+      </div>
+      <p class="caption">Enlarged cropped view of the qualitative grid. Use the report for the full-resolution panel if more examples are needed.</p>
+    </section>
+
     <section class="slide">
       <div class="two-col">
         <div>
@@ -148,12 +158,15 @@
             <span>Hard Mixed</span><strong>17.62 / 0.7843</strong>
           </div>
         </div>
-        <img class="qualitative" src="assets/qualitative_grid_placeholder.png" alt="SIDL qualitative result grid">
+        <div class="final-card">
+          <strong>Main takeaway</strong>
+          <p>For dirty lens restoration, a larger patch is not automatically better. 256×256 crop training gave the best balance between context, augmentation diversity, and optimization stability.</p>
+        </div>
       </div>
     </section>
   </main>
 
-  <div class="counter" aria-hidden="true">1 / 9</div>
+  <div class="counter" aria-hidden="true">1 / 10</div>
   <script src="script.js"></script>
 </body>
 </html>
