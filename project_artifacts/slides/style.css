@@ -34,7 +34,7 @@ body {
   position: absolute;
   inset: 0;
   display: none;
-  padding: 58px 68px;
+  padding: 48px 60px;
   background: #fff;
 }
 
@@ -78,7 +78,7 @@ h2 {
 
 h2 {
   max-width: 920px;
-  font-size: 44px;
+  font-size: 40px;
   line-height: 1.1;
 }
 
@@ -90,8 +90,8 @@ h2 {
 
 .two-col {
   display: grid;
-  grid-template-columns: 1fr 470px;
-  gap: 54px;
+  grid-template-columns: 1fr 500px;
+  gap: 44px;
   align-items: center;
   height: 100%;
 }
@@ -102,7 +102,7 @@ ul {
 }
 
 li {
-  font-size: 27px;
+  font-size: 24px;
   line-height: 1.34;
 }
 
@@ -148,10 +148,34 @@ li + li {
 .figure-slide img {
   display: block;
   width: 100%;
-  max-height: 500px;
-  margin-top: 22px;
+  max-height: 520px;
+  margin-top: 18px;
   object-fit: contain;
   border: 1px solid var(--line);
+}
+
+.architecture-slide {
+  padding: 30px 34px;
+}
+
+.architecture-slide h2,
+.ddm-slide h2 {
+  font-size: 32px;
+  max-width: 100%;
+}
+
+.architecture-slide img {
+  max-height: 575px;
+  margin-top: 10px;
+}
+
+.ddm-slide {
+  padding: 34px 42px;
+}
+
+.ddm-slide img {
+  max-height: 555px;
+  margin-top: 10px;
 }
 
 .caption,
@@ -199,14 +223,14 @@ li + li {
 
 table {
   width: 100%;
-  margin-top: 36px;
+  margin-top: 30px;
   border-collapse: collapse;
-  font-size: 25px;
+  font-size: 23px;
 }
 
 th,
 td {
-  padding: 16px 14px;
+  padding: 13px 12px;
   border-bottom: 1px solid var(--line);
   text-align: right;
 }
@@ -309,6 +333,70 @@ tr.best {
   max-height: 570px;
   object-fit: contain;
   border: 1px solid var(--line);
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 34px;
+  align-items: start;
+  margin-top: 28px;
+}
+
+.comparison-grid table {
+  margin-top: 0;
+  font-size: 23px;
+}
+
+.compare-notes {
+  border-top: 6px solid var(--accent);
+  background: #fbfcfe;
+  box-shadow: inset 0 0 0 1px var(--line);
+  padding: 24px;
+}
+
+.compare-notes strong,
+.compare-notes span,
+.compare-notes small {
+  display: block;
+}
+
+.compare-notes strong {
+  font-size: 30px;
+  margin-bottom: 14px;
+}
+
+.compare-notes span {
+  border-top: 1px solid var(--line);
+  padding: 13px 0;
+  color: var(--muted);
+  font-size: 22px;
+}
+
+.compare-notes small {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.result-layout {
+  grid-template-columns: 1fr 390px;
+}
+
+.short-points {
+  display: grid;
+  gap: 16px;
+  margin-top: 34px;
+}
+
+.short-points span {
+  display: block;
+  border-left: 6px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 16px 20px;
+  font-size: 25px;
+  font-weight: 700;
 }
 
 .counter {

@@ -38,26 +38,41 @@
     </section>
 
     <section class="slide">
-      <div class="two-col">
-        <div>
-          <p class="eyebrow">Why D3Net?</p>
-          <h2>All-in-one restoration with degradation prompts</h2>
-          <ul>
-            <li>U-Net style encoder-decoder preserves multi-scale spatial detail.</li>
-            <li>Fourier branch extracts frequency-domain degradation cues.</li>
-            <li>CDDA creates degradation correction and strategy prompts.</li>
-            <li>DDB dynamically chooses restoration paths through DUs and ADBs.</li>
-          </ul>
+      <p class="eyebrow">Why D3Net?</p>
+      <h2>Original all-in-one benchmark motivates D3Net as the backbone</h2>
+      <div class="comparison-grid">
+        <table>
+          <thead><tr><th>Method</th><th>Avg. PSNR</th><th>Params</th><th>FLOPs</th></tr></thead>
+          <tbody>
+            <tr><td>AirNet</td><td>25.49</td><td>8.93M</td><td>75.32G</td></tr>
+            <tr><td>PromptIR</td><td>27.57</td><td>32.97M</td><td>370.64G</td></tr>
+            <tr><td>IDR</td><td>28.34</td><td>15.34M</td><td>-</td></tr>
+            <tr><td>InstructIR</td><td>29.55</td><td>15.84M</td><td>37.95G</td></tr>
+            <tr class="best"><td>D3Net</td><td>32.36</td><td>37.80M</td><td>33.67G</td></tr>
+          </tbody>
+        </table>
+        <div class="compare-notes">
+          <strong>Key idea</strong>
+          <span>Frequency-domain degradation cue</span>
+          <span>Cross-domain prompts</span>
+          <span>Dynamic decomposition blocks</span>
+          <small>Numbers are from the original D3Net five-task benchmark, not from SIDL validation.</small>
         </div>
-        <img class="paper-figure" src="assets/d3net_ddm_paper.png" alt="D3Net dynamic decomposition mechanism">
       </div>
     </section>
 
-    <section class="slide figure-slide">
+    <section class="slide figure-slide architecture-slide">
       <p class="eyebrow">Method Overview</p>
-      <h2>Input dirty image → D3Net residual → restored image</h2>
+      <h2>D3Net: CDDA prompts + dynamic degradation decomposition</h2>
       <img src="assets/d3net_architecture_paper.png" alt="D3Net architecture from original paper">
       <p class="caption">Original D3Net architecture figure from Wang et al., arXiv:2502.19068. In this project, the predicted residual is added to the dirty input for final restoration.</p>
+    </section>
+
+    <section class="slide figure-slide ddm-slide">
+      <p class="eyebrow">Dynamic Block</p>
+      <h2>DUs select whether ADBs should process degradation-aware features</h2>
+      <img src="assets/d3net_ddm_paper.png" alt="D3Net dynamic decomposition mechanism">
+      <p class="caption">DDM lets the model adjust the feature-processing path for mixed or local contamination patterns.</p>
     </section>
 
     <section class="slide">
@@ -75,10 +90,10 @@
     </section>
 
     <section class="slide">
-      <div class="two-col">
+      <div class="two-col result-layout">
         <div>
           <p class="eyebrow">Results</p>
-          <h2>256×256 crop achieved the best validation PSNR</h2>
+          <h2>256 crop achieved the best validation PSNR</h2>
           <table>
             <thead><tr><th>Run</th><th>PSNR</th><th>SSIM</th></tr></thead>
             <tbody>
@@ -103,12 +118,11 @@
         <div>
           <p class="eyebrow">Ablation & Discussion</p>
           <h2>Patch size creates a training trade-off</h2>
-          <ul>
-            <li>128 crop lacks enough spatial context for lens contamination.</li>
-            <li>256 crop balances context, random crop diversity, and batch dynamics.</li>
-            <li>512 refinement changes the effective training distribution.</li>
-            <li>Batch size drops to 1, making optimization less stable.</li>
-          </ul>
+          <div class="short-points">
+            <span>128: context 부족</span>
+            <span>256: context / augmentation 균형</span>
+            <span>512: distribution shift + batch size 1</span>
+          </div>
         </div>
         <div class="bars">
           <div style="--h:33"><span>128</span><strong>23.33</strong></div>
@@ -124,11 +138,11 @@
         <div>
           <p class="eyebrow">Conclusion</p>
           <h2>Hard Dust / Mixed remains the main bottleneck</h2>
-          <ul>
-            <li>D3Net reached 23.82 dB / 0.8398 on the controlled 256 crop run.</li>
-            <li>Larger-patch refinement did not guarantee improvement.</li>
-            <li>Future work: pretrained models, TTA/self-ensemble, difficulty-aware sampling, and loss redesign.</li>
-          </ul>
+          <div class="short-points">
+            <span>Best: 23.82 dB / 0.8398</span>
+            <span>512 refinement did not improve PSNR</span>
+            <span>Future: pretrained model, TTA, sampling, loss redesign</span>
+          </div>
           <div class="bottleneck">
             <span>Hard Dust</span><strong>16.86 / 0.7065</strong>
             <span>Hard Mixed</span><strong>17.62 / 0.7843</strong>
@@ -139,7 +153,7 @@
     </section>
   </main>
 
-  <div class="counter" aria-hidden="true">1 / 8</div>
+  <div class="counter" aria-hidden="true">1 / 9</div>
   <script src="script.js"></script>
 </body>
 </html>

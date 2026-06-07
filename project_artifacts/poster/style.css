@@ -22,7 +22,7 @@ body {
 }
 
 .poster {
-  width: 1600px;
+  width: 1760px;
   min-height: 2260px;
   margin: 28px auto;
   padding: 58px 62px;
@@ -111,8 +111,8 @@ h1 {
 
 .columns {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }
 
 .column {
@@ -134,7 +134,7 @@ h1 {
 h2 {
   margin: 0 0 14px;
   color: var(--accent);
-  font-size: 30px;
+  font-size: 28px;
   line-height: 1.1;
   letter-spacing: 0;
 }
@@ -143,7 +143,7 @@ p,
 li,
 dd,
 dt {
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.42;
 }
 
@@ -182,13 +182,13 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 12px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 th,
 td {
   border-bottom: 1px solid var(--line);
-  padding: 10px 8px;
+  padding: 8px 7px;
   text-align: right;
   vertical-align: top;
 }
@@ -200,7 +200,7 @@ td:first-child {
 
 th {
   color: var(--muted);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -233,12 +233,13 @@ th {
 }
 
 .compact-figure img {
-  max-height: 330px;
+  max-height: 300px;
   object-fit: contain;
 }
 
 .qualitative img {
-  max-height: 430px;
+  width: 100%;
+  height: 390px;
   object-fit: contain;
 }
 
@@ -249,7 +250,7 @@ th {
 }
 
 .bar-chart {
-  height: 230px;
+  height: 210px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: end;
@@ -293,7 +294,7 @@ th {
   padding: 14px 16px;
   border-left: 6px solid var(--accent);
   background: var(--accent-soft);
-  font-size: 22px;
+  font-size: 19px;
   line-height: 1.45;
 }
 
@@ -306,7 +307,7 @@ th {
 }
 
 @page {
-  size: 1600px 2260px;
+  size: 1760px 2260px;
   margin: 0;
 }
 
@@ -318,7 +319,7 @@ th {
 
   .poster {
     margin: 0;
-    width: 1600px;
+    width: 1760px;
     min-height: 2260px;
     box-shadow: none;
   }

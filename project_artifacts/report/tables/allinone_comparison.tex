@@ -1,0 +1,17 @@
+\begin{table}[H]
+\centering
+\caption{Reference comparison with existing all-in-one restoration models reported in the original D3Net paper \cite{wang2025d3net}. The benchmark averages five restoration tasks (Rain100L, SOTS, BSD68, GoPro, LOL), so it is not directly comparable to our SIDL validation numbers.}
+\label{tab:allinone_context}
+\small
+\begin{tabularx}{\linewidth}{l c c c X}
+\toprule
+Method & Avg. PSNR & Avg. SSIM & Params / FLOPs & Interpretation \\
+\midrule
+AirNet & 25.49 & 0.846 & 8.93M / 75.32G & Contrastive/degradation-aware all-in-one baseline. \\
+PromptIR & 27.57 & 0.881 & 32.97M / 370.64G & Prompt-based restoration with high computational cost. \\
+IDR & 28.34 & 0.893 & 15.34M / -- & Ingredient-oriented multi-degradation formulation. \\
+InstructIR & 29.55 & 0.907 & 15.84M / 37.95G & Text-instructed restoration; depends on predefined instructions. \\
+D3Net & \textbf{32.36} & 0.901 & 37.80M / 33.67G & Frequency-domain CDDA + dynamic decomposition; selected as the SIDL adaptation backbone. \\
+\bottomrule
+\end{tabularx}
+\end{table}

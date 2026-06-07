@@ -34,6 +34,9 @@
   - Figure 2: `report/figures/d3net_architecture_paper.pdf`
   - Figure 3: `report/figures/d3net_ddm_paper.pdf`
   - HTML용 PNG 변환본은 `poster/assets/`와 `slides/assets/`에 포함
+- Original D3Net all-in-one benchmark:
+  - AirNet / PromptIR / IDR / InstructIR / D3Net reference comparison
+  - SIDL validation과 직접 비교하지 않고 backbone 선택 근거로만 사용
 
 ## Overleaf Upload
 

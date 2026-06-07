@@ -66,6 +66,7 @@ SIDL은 Smartphone Images with Dirty Lenses의 약자로, 스마트폰 렌즈 �
 \textbf{All-in-one image restoration.}
 All-in-one restoration은 single-task model과 달리 하나의 모델이 여러 degradation type을 처리하는 것을 목표로 한다.
 NAFNet \cite{chen2022nafnet}, Restormer \cite{zamir2022restormer}, DiffUIR \cite{zheng2024diffuir} 등은 SIDL benchmark에서도 비교 대상으로 언급되는 대표적인 restoration 계열이다.
+또한 D3Net 원 논문은 AirNet, PromptIR, IDR, InstructIR 등 기존 all-in-one restoration 방법과의 비교를 통해 D3Net의 frequency-domain prompt와 dynamic decomposition 설계가 평균 성능과 계산량 측면에서 경쟁력이 있음을 보고하였다 \cite{wang2025d3net}.
 다만 SIDL dirty lens restoration은 haze, rain, blur처럼 사전에 잘 정형화된 degradation만을 다루는 문제가 아니라 실제 렌즈 표면의 물리적 오염이 섞인 문제이므로, degradation-aware feature adaptation이 중요하다.
 
 \textbf{D3Net.}
@@ -127,6 +128,12 @@ Loss는 L1 loss를 사용하였고, optimizer는 Adam 및 cosine annealing sched
 256 low-LR polishing 역시 256 best checkpoint에서 시작한 추가 fine-tuning 실험이다.
 
 \section{Results}
+\input{tables/allinone_comparison.tex}
+
+표 \ref{tab:allinone_context}는 본 프로젝트에서 새로 측정한 SIDL 결과가 아니라 D3Net 원 논문의 five-task all-in-one benchmark를 요약한 reference comparison이다.
+따라서 본 프로젝트의 SIDL validation 결과와 직접적인 순위 비교로 해석하면 안 된다.
+이 표의 목적은 D3Net이 기존 all-in-one 방법 대비 frequency-domain cue와 dynamic decomposition을 통해 degradation-adaptive backbone으로 설계되었음을 보여주는 것이다.
+
 \input{tables/results_main.tex}
 
 Main controlled run인 256$\times$256 crop training은 23.82 dB / 0.8398로 가장 높은 PSNR을 보였다.
