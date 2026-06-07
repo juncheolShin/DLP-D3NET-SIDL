@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <style>
+      .bg { fill: #f6f8fb; }
+      .band { fill: #eef3f8; stroke: #d4dde8; stroke-width: 2; }
+      .box { fill: #ffffff; stroke: #bfcbda; stroke-width: 2; rx: 12; }
+      .accent { fill: #e8f4f1; stroke: #84aaa0; stroke-width: 2; rx: 12; }
+      .prompt { fill: #fff4df; stroke: #d0a452; stroke-width: 2; rx: 12; }
+      .out { fill: #eaf0ff; stroke: #879bd3; stroke-width: 2; rx: 12; }
+      .title { font: 700 28px DejaVu Sans, Arial, sans-serif; fill: #202631; }
+      .h { font: 700 18px DejaVu Sans, Arial, sans-serif; fill: #202631; }
+      .t { font: 14px DejaVu Sans, Arial, sans-serif; fill: #3c4655; }
+      .small { font: 12px DejaVu Sans, Arial, sans-serif; fill: #596577; }
+      .arrow { stroke: #556171; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .skip { stroke: #879bd3; stroke-width: 2.5; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#556171"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1280" height="720"/>
+  <text class="title" x="48" y="54">D3Net architecture used for SIDL restoration</text>
+  <text class="small" x="48" y="80">Residual restoration: final restored image = input + D3Net(input)</text>
+
+  <rect class="band" x="40" y="110" width="1200" height="250" rx="18"/>
+  <text class="h" x="64" y="142">Main U-Net restoration path</text>
+
+  <rect class="box" x="72" y="185" width="116" height="74"/>
+  <text class="h" x="98" y="214">Input</text>
+  <text class="small" x="93" y="238">RGB image</text>
+
+  <rect class="box" x="238" y="175" width="126" height="94"/>
+  <text class="h" x="262" y="208">Inc</text>
+  <text class="small" x="264" y="232">DoubleConv</text>
+  <text class="small" x="278" y="250">3 -> 64</text>
+
+  <rect class="box" x="414" y="175" width="126" height="94"/>
+  <text class="h" x="441" y="208">Down1</text>
+  <text class="small" x="448" y="232">64 -> 128</text>
+  <text class="small" x="441" y="250">DDB inserted</text>
+
+  <rect class="accent" x="590" y="160" width="150" height="124"/>
+  <text class="h" x="624" y="194">DDB</text>
+  <text class="small" x="616" y="218">12 decision units</text>
+  <text class="small" x="612" y="238">adaptive blocks</text>
+  <text class="small" x="619" y="258">prompt-guided</text>
+
+  <rect class="box" x="790" y="175" width="126" height="94"/>
+  <text class="h" x="814" y="208">Encoder</text>
+  <text class="small" x="818" y="232">Down2-Down4</text>
+  <text class="small" x="825" y="250">256/512/1024</text>
+
+  <rect class="box" x="966" y="175" width="126" height="94"/>
+  <text class="h" x="995" y="208">Decoder</text>
+  <text class="small" x="990" y="232">Up1-Up4</text>
+  <text class="small" x="984" y="250">skip connections</text>
+
+  <rect class="out" x="1142" y="185" width="74" height="74"/>
+  <text class="h" x="1157" y="214">Res</text>
+  <text class="small" x="1154" y="238">3 ch</text>
+
+  <path class="arrow" d="M188 222 H238"/>
+  <path class="arrow" d="M364 222 H414"/>
+  <path class="arrow" d="M540 222 H590"/>
+  <path class="arrow" d="M740 222 H790"/>
+  <path class="arrow" d="M916 222 H966"/>
+  <path class="arrow" d="M1092 222 H1142"/>
+  <path class="skip" d="M292 269 C292 326 1018 326 1018 269"/>
+  <path class="skip" d="M477 269 C477 308 850 308 850 269"/>
+
+  <rect class="band" x="40" y="400" width="1200" height="210" rx="18"/>
+  <text class="h" x="64" y="432">Degradation prompt path</text>
+
+  <rect class="box" x="82" y="475" width="126" height="74"/>
+  <text class="h" x="110" y="504">FFT</text>
+  <text class="small" x="102" y="528">magnitude map</text>
+
+  <rect class="prompt" x="270" y="456" width="160" height="112"/>
+  <text class="h" x="310" y="490">DA</text>
+  <text class="small" x="304" y="514">FourierCNN</text>
+  <text class="small" x="296" y="534">1 -> 32 -> 64</text>
+  <text class="small" x="315" y="552">-> 512</text>
+
+  <rect class="prompt" x="492" y="456" width="170" height="112"/>
+  <text class="h" x="525" y="490">crAttention</text>
+  <text class="small" x="526" y="514">frequency cue</text>
+  <text class="small" x="521" y="534">content prompt</text>
+
+  <rect class="prompt" x="724" y="456" width="170" height="112"/>
+  <text class="h" x="758" y="490">stAttention</text>
+  <text class="small" x="755" y="514">structure cue</text>
+  <text class="small" x="748" y="534">restoration prompt</text>
+
+  <rect class="accent" x="956" y="456" width="180" height="112"/>
+  <text class="h" x="1004" y="490">DDB input</text>
+  <text class="small" x="992" y="514">x2 feature + prompts</text>
+  <text class="small" x="985" y="534">adaptive decomposition</text>
+
+  <path class="arrow" d="M208 512 H270"/>
+  <path class="arrow" d="M430 512 H492"/>
+  <path class="arrow" d="M662 512 H724"/>
+  <path class="arrow" d="M894 512 H956"/>
+  <path class="arrow" d="M1046 456 C1046 370 665 370 665 284"/>
+
+  <rect class="out" x="500" y="640" width="280" height="48"/>
+  <text class="h" x="538" y="671">Output image = Input + Residual</text>
+  <path class="arrow" d="M1179 259 C1179 650 782 664 780 664"/>
+  <path class="arrow" d="M130 259 C130 650 496 664 500 664"/>
+</svg>

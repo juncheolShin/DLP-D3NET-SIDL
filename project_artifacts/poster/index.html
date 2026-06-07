@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>D3Net-based Dirty Lens Image Restoration Poster</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="poster">
+    <header class="poster-header">
+      <div>
+        <p class="venue">SIDL Dirty Lens Image Restoration Final Project</p>
+        <h1>D3Net-based All-in-One Restoration for Smartphone Images with Dirty Lenses</h1>
+        <p class="subtitle">Patch-size ablation and failure analysis on SIDL dirty lens restoration</p>
+      </div>
+      <div class="author-box">
+        <strong>TODO: Name</strong>
+        <span>TODO: Course / Affiliation</span>
+      </div>
+    </header>
+
+    <section class="hero-strip">
+      <div>
+        <span class="kicker">Main result</span>
+        <strong>23.82 dB / 0.8398</strong>
+        <small>Best validation at epoch 34 with 256×256 crop training</small>
+      </div>
+      <div>
+        <span class="kicker">Best setting</span>
+        <strong>256×256 crop</strong>
+        <small>Balanced spatial context, augmentation, and optimization stability</small>
+      </div>
+      <div>
+        <span class="kicker">Negative result</span>
+        <strong>512 refinement ↓</strong>
+        <small>23.27 dB after low-LR refinement from 256 best</small>
+      </div>
+      <div>
+        <span class="kicker">Bottleneck</span>
+        <strong>Hard Dust / Mixed</strong>
+        <small>Severe contamination remains the dominant failure mode</small>
+      </div>
+    </section>
+
+    <div class="columns">
+      <section class="column">
+        <article class="block">
+          <h2>Motivation</h2>
+          <ul>
+            <li>Smartphone lenses are easily contaminated by dust, fingerprint, scratch, water, and mixed residue.</li>
+            <li>Dirty lens degradation creates both spatial artifacts and frequency-domain distortion.</li>
+            <li>The core question is whether a degradation-adaptive all-in-one model can handle SIDL restoration.</li>
+          </ul>
+        </article>
+
+        <article class="block">
+          <h2>SIDL Dirty Lens Restoration Task</h2>
+          <p>SIDL is a real-world paired dataset for restoring smartphone images captured through contaminated lenses. This project uses 512×512 patchified image pairs and evaluates PSNR/SSIM by contamination type and difficulty.</p>
+          <div class="tag-grid">
+            <span>clean</span>
+            <span>dust</span>
+            <span>finger</span>
+            <span>mixed</span>
+            <span>scratch</span>
+            <span>water</span>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Difficulty</th><th>PSNR</th><th>SSIM</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Easy</td><td><strong>27.00</strong></td><td>0.8812</td></tr>
+              <tr><td>Medium</td><td><strong>25.36</strong></td><td>0.8862</td></tr>
+              <tr><td>Hard</td><td><strong>20.33</strong></td><td>0.7743</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="block">
+          <h2>Experimental Setup</h2>
+          <dl class="setup-list">
+            <dt>Model</dt><dd>D3Net, scratch training</dd>
+            <dt>Train data</dt><dd>SIDL patchified degraded-clean pairs</dd>
+            <dt>Validation</dt><dd>512×512 image pairs, PSNR / SSIM</dd>
+            <dt>Main crop</dt><dd>256×256 random crop</dd>
+            <dt>Hardware</dt><dd>RTX 4090</dd>
+            <dt>Limit</dt><dd>Limited class-project compute budget</dd>
+          </dl>
+        </article>
+      </section>
+
+      <section class="column">
+        <article class="block figure-block">
+          <h2>D3Net Architecture</h2>
+          <img src="assets/d3net_architecture_paper.png" alt="D3Net architecture from the original paper">
+          <p class="caption">Original D3Net architecture figure from Wang et al., arXiv:2502.19068: restoration reconstruction branch + degradation decomposition branch with CDDA prompts.</p>
+        </article>
+
+        <article class="block figure-block compact-figure">
+          <h2>Dynamic Degradation Decomposition</h2>
+          <img src="assets/d3net_ddm_paper.png" alt="Dynamic decomposition mechanism from the D3Net paper">
+          <p class="caption">Original D3Net DDM figure from Wang et al., arXiv:2502.19068. Decision Units decide whether Adaptive Decomposition Blocks should process degradation-aware features.</p>
+        </article>
+
+        <article class="block">
+          <h2>Main Results</h2>
+          <table>
+            <thead>
+              <tr><th>Run</th><th>PSNR</th><th>SSIM</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>128 baseline</td><td>23.33</td><td>0.8357</td></tr>
+              <tr class="highlight-row"><td>256 main</td><td><strong>23.82</strong></td><td>0.8398</td></tr>
+              <tr><td>256 low-LR</td><td>23.76</td><td><strong>0.8409</strong></td></tr>
+              <tr><td>512 refinement</td><td>23.27</td><td>0.8336</td></tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="column">
+        <article class="block">
+          <h2>Patch-size Ablation</h2>
+          <div class="bar-chart" aria-label="Patch-size ablation PSNR chart">
+            <div style="--value:33"><span>128</span><strong>23.33</strong></div>
+            <div class="best" style="--value:82"><span>256</span><strong>23.82</strong></div>
+            <div style="--value:76"><span>256 polish</span><strong>23.76</strong></div>
+            <div style="--value:27"><span>512</span><strong>23.27</strong></div>
+          </div>
+          <p>256 crop improves over 128 by adding spatial context, while 512 refinement drops despite larger context.</p>
+        </article>
+
+        <article class="block">
+          <h2>Difficulty & Contamination Analysis</h2>
+          <table>
+            <thead>
+              <tr><th>Type</th><th>Average PSNR</th><th>Average SSIM</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Clean</td><td>29.93</td><td>0.9113</td></tr>
+              <tr><td>Dust</td><td>21.89</td><td>0.8203</td></tr>
+              <tr><td>Finger</td><td>21.80</td><td>0.7858</td></tr>
+              <tr><td>Mixed</td><td>20.48</td><td>0.8269</td></tr>
+              <tr><td>Scratch</td><td>25.07</td><td>0.8488</td></tr>
+              <tr><td>Water</td><td>22.93</td><td>0.8423</td></tr>
+            </tbody>
+          </table>
+          <div class="callout">Hard Dust: <strong>16.86 / 0.7065</strong><br>Hard Mixed: <strong>17.62 / 0.7843</strong></div>
+        </article>
+
+        <article class="block figure-block qualitative">
+          <h2>Qualitative Results</h2>
+          <img src="assets/qualitative_grid_placeholder.png" alt="SIDL qualitative comparison grid">
+          <p class="caption">Input / D3Net output / GT examples from the 256 best checkpoint.</p>
+        </article>
+
+        <article class="block takeaways">
+          <h2>Takeaways</h2>
+          <ol>
+            <li>D3Net can be adapted to SIDL dirty lens restoration under limited compute.</li>
+            <li>256×256 crop training was the most stable setting.</li>
+            <li>512 refinement suggests patch-size-induced training distribution shift.</li>
+            <li>Hard Dust/Mixed remains the main bottleneck.</li>
+          </ol>
+        </article>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

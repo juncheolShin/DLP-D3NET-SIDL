@@ -201,7 +201,7 @@ def main():
                         help="Epoch interval for validation")
     parser.add_argument("--pretrained", type=str, default="",
                         help="Path to pretrained checkpoint (for transfer learning)")
-    parser.add_argument("--types", type=str, default="finger,dust,scratch,water,mixed",
+    parser.add_argument("--types", type=str, default="finger,dust,scratch,water,mixed,clean",
                         help="Comma-separated contamination types to train on")
     parser.add_argument("--patience", type=int, default=20,
                         help="Epoch patience for early stopping based on validation PSNR")
@@ -312,7 +312,7 @@ def main():
         epoch_loss = 0.0
 
         pbar = tqdm(
-            enumerate(train_loader),
+            enumerate(train_loader),    
             total=len(train_loader),
             desc=f"Epoch {epoch:02d}/{opt.n_epochs}",
             leave=False,

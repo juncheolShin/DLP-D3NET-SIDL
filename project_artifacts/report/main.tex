@@ -1,0 +1,187 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{kotex}
+\usepackage[a4paper,margin=18mm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+
+\usetikzlibrary{arrows.meta,positioning,fit}
+\pgfplotsset{compat=1.18}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+\captionsetup{font=small,labelfont=bf}
+\setlist[itemize]{leftmargin=1.2em,itemsep=0.15em,topsep=0.2em}
+\setlength{\parskip}{0.25em}
+\setlength{\parindent}{0.8em}
+\renewcommand{\arraystretch}{1.12}
+
+\title{\vspace{-1.5em}\textbf{D3Net-based All-in-One Restoration for Smartphone Images with Dirty Lenses}}
+\author{TODO: 이름 / 과목명}
+\date{SIDL Dirty Lens Image Restoration Final Project}
+
+\begin{document}
+\maketitle
+\vspace{-1.2em}
+
+\begin{abstract}
+스마트폰 카메라는 일상적으로 사용되지만 렌즈 표면의 dust, fingerprint, scratch, water drop과 같은 오염에 의해 복합적인 영상 열화를 겪는다.
+본 프로젝트는 all-in-one image restoration 모델인 D3Net을 SIDL dirty lens restoration에 적용하고, patch size와 refinement strategy가 복원 성능에 미치는 영향을 분석한다.
+고정된 최종 SIDL train/validation split에서 256$\times$256 crop으로 scratch training한 D3Net은 validation 기준 23.82 dB / SSIM 0.8398을 달성하였다.
+128$\times$128 baseline은 23.33 dB / 0.8357로 낮았고, 256 best checkpoint에서 시작한 512$\times$512 refinement는 23.27 dB / 0.8336으로 하락하였다.
+결과는 dirty lens artifact 복원에 충분한 spatial context가 중요하지만, 큰 patch가 항상 유리하지는 않으며 crop distribution, augmentation, batch dynamics, optimization stability 사이의 trade-off가 존재함을 보여준다.
+\end{abstract}
+
+\section{Introduction}
+Dirty lens restoration은 일반적인 denoising 또는 deblurring과 다르다.
+스마트폰 렌즈 표면의 오염은 장면 자체의 blur나 sensor noise가 아니라 렌즈 앞의 물리적 contamination에서 발생하므로, spatial artifact와 frequency-domain artifact가 동시에 나타난다.
+예를 들어 dust는 국소적인 산란과 contrast 저하를 만들고, fingerprint나 mixed contamination은 저주파 haze와 고주파 edge 손실을 함께 유발할 수 있다.
+SIDL은 이러한 문제를 실제 스마트폰 촬영 환경에서 paired clean/degraded image로 구성한 dirty lens restoration dataset이다 \cite{choi2025sidl}.
+
+본 프로젝트의 핵심 질문은 다음과 같다.
+\textit{All-in-one image restoration model인 D3Net이 SIDL dirty lens restoration에 효과적으로 적용될 수 있는가?}
+또한 \textit{patch size와 refinement strategy는 성능에 어떤 영향을 주며, Hard difficulty 특히 Dust/Mixed contamination에서 병목이 왜 발생하는가?}를 분석한다.
+
+본 보고서의 기여는 세 가지다.
+첫째, D3Net \cite{wang2025d3net}을 SIDL dirty lens restoration에 적용하여 제한된 수업 프로젝트 예산에서 scratch adaptation을 수행하였다.
+둘째, 128/256/512 patch-size 및 refinement strategy를 비교하여 256$\times$256 crop training이 가장 안정적임을 확인하였다.
+셋째, difficulty/type별 validation breakdown을 통해 최종 성능 병목이 Hard Dust와 Hard Mixed 계열에 집중됨을 보였다.
+
+\section{Related Work and Background}
+\textbf{SIDL dataset.}
+SIDL은 Smartphone Images with Dirty Lenses의 약자로, 스마트폰 렌즈 오염 복원을 위한 real-world paired dataset이다 \cite{choi2025sidl}.
+오염 유형은 clean, dust, fingerprint/finger, mixed, scratch, water를 포함하며, 평가 난이도는 Easy, Medium, Hard로 나뉜다.
+본 프로젝트에서는 512$\times$512로 patchified된 SIDL image pair를 사용하였다.
+학습에는 train split의 degraded-clean pair를 사용하고, validation은 type과 difficulty가 분리된 512$\times$512 image pair에서 PSNR/SSIM으로 수행하였다.
+
+\textbf{All-in-one image restoration.}
+All-in-one restoration은 single-task model과 달리 하나의 모델이 여러 degradation type을 처리하는 것을 목표로 한다.
+NAFNet \cite{chen2022nafnet}, Restormer \cite{zamir2022restormer}, DiffUIR \cite{zheng2024diffuir} 등은 SIDL benchmark에서도 비교 대상으로 언급되는 대표적인 restoration 계열이다.
+다만 SIDL dirty lens restoration은 haze, rain, blur처럼 사전에 잘 정형화된 degradation만을 다루는 문제가 아니라 실제 렌즈 표면의 물리적 오염이 섞인 문제이므로, degradation-aware feature adaptation이 중요하다.
+
+\textbf{D3Net.}
+D3Net은 Dynamic Degradation Decomposition Network의 약자로, frequency-domain degradation cue와 prompt-guided dynamic decomposition을 통해 여러 degradation type을 하나의 모델로 복원하려는 all-in-one restoration architecture이다 \cite{wang2025d3net}.
+본 프로젝트는 D3Net이 원 논문에서 보고한 SOTA 성능을 SIDL에서 재현했다고 주장하지 않는다.
+대신 제한된 학습 시간과 single GPU 환경에서 D3Net을 SIDL dirty lens task에 adaptation한 실험으로 해석한다.
+
+\section{Method}
+그림 \ref{fig:d3net}은 본 프로젝트에서 사용한 D3Net pipeline을 요약한다.
+모델은 U-Net style encoder-decoder 구조를 기반으로 하며, 입력 dirty image에서 직접 clean image를 예측하기보다 residual correction을 예측한다.
+최종 출력은 입력 영상 $x$와 모델이 예측한 residual $r_\theta(x)$의 합으로 계산된다.
+\begin{equation}
+    \hat{y} = x + r_\theta(x).
+\end{equation}
+이 residual formulation은 dirty input의 장면 구조를 보존하면서 contamination으로 인한 local/global artifact를 보정하는 방향으로 학습을 유도한다.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{figures/d3net_architecture_paper.pdf}
+    \caption{D3Net architecture from the original paper \cite{wang2025d3net}. 모델은 restoration reconstruction branch와 degradation decomposition branch로 구성되며, CDDA가 degradation correction prompt와 strategy prompt를 생성한다.}
+    \label{fig:d3net}
+\end{figure}
+
+Encoder는 multi-scale feature를 추출하고, decoder는 skip connection을 통해 spatial detail을 복원한다.
+Fourier branch는 입력 이미지를 FFT magnitude 또는 frequency representation으로 변환한 뒤 convolutional feature를 추출하여 degradation cue를 만든다.
+이 branch는 dust, scratch, water drop, fingerprint처럼 서로 다른 contamination이 만드는 주파수적 패턴을 포착하려는 역할을 한다.
+
+Cross-attention module은 image feature와 degradation prompt 사이의 상호작용을 통해 contamination-aware feature를 만든다.
+코드 구조상 FourierCNN으로 얻은 degradation feature는 correction prompt와 strategy prompt로 변환되고, 이 prompt들은 DDB(Dynamic Degradation Decomposition Block)에 전달된다.
+DDB는 여러 decision unit을 포함하며, 각 decision unit은 prompt와 image feature를 기반으로 adaptive block을 적용할지 결정한다.
+활성화된 sample에는 ADB(Adaptive Decomposition Block)가 적용되고, ADB는 prompt-conditioned operation을 통해 복원에 필요한 feature transformation을 수행한다.
+따라서 D3Net은 SIDL처럼 degradation type이 하나로 고정되지 않고 dust, scratch, water, fingerprint, mixed contamination이 섞인 all-in-one restoration 문제에 적용할 의미가 있다.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\linewidth]{figures/d3net_ddm_paper.pdf}
+    \caption{Dynamic Decomposition Mechanism from the original D3Net paper \cite{wang2025d3net}. DUs는 ADB 활성 여부를 결정하고, ADBs는 prompt-conditioned feature transformation을 수행한다.}
+    \label{fig:ddm}
+\end{figure}
+
+\section{Experimental Setup}
+\textbf{Dataset.}
+실험에는 SIDL의 512$\times$512 patchified degraded-clean pair를 사용하였다.
+Train split은 contamination type별 input/target pair로 구성되며, validation split은 type과 difficulty(Easy/Medium/Hard) 기준으로 분리되어 있다.
+Validation은 full 512$\times$512 center crop 기준으로 수행하였다.
+
+\textbf{Training.}
+메인 실험은 D3Net을 pretrained checkpoint 없이 scratch training한 결과이다.
+256$\times$256 crop run은 fixed final dataset에서 수행한 main controlled experiment이고, best validation checkpoint는 epoch 34에서 얻어졌다.
+Loss는 L1 loss를 사용하였고, optimizer는 Adam 및 cosine annealing scheduler를 사용하였다.
+학습 하드웨어는 RTX 4090이다.
+본 실험은 official D3Net 수준으로 충분한 epoch를 사용해 완전 수렴시킨 연구가 아니라, 수업 프로젝트의 제한된 시간과 compute budget 안에서 수행한 adaptation이다.
+모델 parameter 수와 GMAC 측정값은 현재 workspace에서 확정된 값이 없어 TODO로 남긴다.
+
+\textbf{Ablation.}
+128$\times$128 crop baseline은 초기 실험으로, incremental task/data addition이 있었기 때문에 완전히 통제된 비교는 아니다.
+그러나 작은 patch의 context 부족을 보여주는 exploratory baseline으로 포함한다.
+512$\times$512 refinement는 256 best checkpoint에서 시작하였고, learning rate는 $1\times10^{-5}$, training batch size는 1로 설정되었다.
+256 low-LR polishing 역시 256 best checkpoint에서 시작한 추가 fine-tuning 실험이다.
+
+\section{Results}
+\input{tables/results_main.tex}
+
+Main controlled run인 256$\times$256 crop training은 23.82 dB / 0.8398로 가장 높은 PSNR을 보였다.
+128 baseline은 23.33 dB / 0.8357에 그쳤고, 512 refinement는 23.27 dB / 0.8336으로 하락하였다.
+256 low-LR polishing은 SSIM은 0.8409로 약간 높았으나 PSNR은 23.76 dB로 main 256 best를 넘지 못했다.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/patch_ablation_plot_placeholder.tex}
+    \caption{Patch-size/refinement ablation. 256 crop training이 가장 높은 validation PSNR을 달성하였고, 512 refinement는 더 큰 context에도 불구하고 성능이 하락하였다.}
+    \label{fig:ablation}
+\end{figure}
+
+\input{tables/ablation_table.tex}
+
+Difficulty-wise 결과는 Hard split에서 큰 하락을 보인다.
+256 best 기준 Easy average는 27.00 dB / 0.8812, Medium average는 25.36 dB / 0.8862, Hard average는 20.33 dB / 0.7743이다.
+Type-wise average에서는 clean이 29.93 dB / 0.9113으로 가장 높고, mixed가 20.48 dB / 0.8269, finger가 21.80 dB / 0.7858, dust가 21.89 dB / 0.8203으로 낮다.
+특히 Hard Dust는 16.86 dB / 0.7065, Hard Mixed는 17.62 dB / 0.7843으로 주요 병목에 해당한다.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.86\linewidth]{figures/qualitative_grid_placeholder.png}
+    \caption{256 best checkpoint 기반 qualitative examples. 각 예시는 input / D3Net output / GT 비교 패널이며, finger-hard, dust-medium, scratch-hard, water-hard, mixed-medium sample을 포함한다.}
+    \label{fig:qualitative}
+\end{figure}
+
+\section{Discussion}
+\textbf{Why 256 crop worked best.}
+128$\times$128 crop은 dirty lens artifact를 복원하기에 충분한 spatial context를 제공하지 못했을 가능성이 높다.
+렌즈 오염은 local texture만의 문제가 아니라 영상 전체의 contrast, veiling, scattering, low-frequency distortion과 연결된다.
+256$\times$256 crop은 local artifact와 주변 context를 함께 볼 수 있으면서도 batch size와 augmentation 다양성을 유지할 수 있어 가장 안정적인 trade-off를 만들었다.
+
+\textbf{Why 512 refinement failed.}
+512$\times$512 refinement는 더 큰 context를 제공하지만 성능은 23.27 dB로 하락했다.
+첫 번째 가능성은 effective training distribution shift이다.
+256 training은 512 patch에서 random 256 crop을 반복적으로 뽑으므로 augmentation 다양성이 크지만, 512 training은 full patch 학습에 가까워져 모델이 보게 되는 crop distribution이 달라진다.
+두 번째는 batch dynamics이다.
+512 refinement는 batch size가 1로 줄어 gradient estimate가 불안정해지고, cosine schedule 및 low learning rate 조건에서도 optimization이 민감해질 수 있다.
+세 번째는 D3Net의 Fourier/prompt branch가 input scale 또는 crop distribution 변화에 민감할 가능성이다.
+따라서 patch size는 단순히 클수록 좋은 hyperparameter가 아니라 spatial context, augmentation, batch size, optimization stability 사이의 균형으로 보아야 한다.
+
+\textbf{Hard Dust/Mixed bottleneck.}
+Hard Dust와 Hard Mixed는 가장 낮은 PSNR 영역에 있다.
+Dust는 작은 입자에 의한 local scattering과 contrast 감소가 섞이고, Mixed는 서로 다른 contamination이 동시에 존재해 degradation cue가 모호해진다.
+L1 loss는 평균적인 pixel fidelity를 높이는 데 유리하지만, 심한 오염에서 perceptual structure나 local contrast recovery를 충분히 강하게 유도하지 못할 수 있다.
+또한 validation metric인 PSNR/SSIM은 강한 contamination이 남은 영역에 민감하므로, Hard split에서 성능 하락이 더 뚜렷하게 나타난다.
+
+\section{Conclusion}
+본 프로젝트는 D3Net을 SIDL dirty lens restoration에 적용하고 patch-size/refinement ablation을 분석하였다.
+최종 main controlled run에서는 256$\times$256 crop scratch training이 23.82 dB / SSIM 0.8398로 가장 안정적인 성능을 보였다.
+반면 512$\times$512 refinement는 큰 spatial context에도 불구하고 성능이 하락했으며, 이는 patch-size-induced training distribution shift와 batch size 감소에 따른 optimization instability를 시사한다.
+향후 연구에서는 pretrained D3Net 또는 다른 restoration backbone과의 비교, TTA/self-ensemble, difficulty-aware sampling, frequency-aware loss, perceptual/edge-aware loss, 그리고 NAFNet/Restormer/DiffUIR 계열과의 통제된 비교가 필요하다.
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}

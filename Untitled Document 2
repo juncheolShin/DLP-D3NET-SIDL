@@ -1,0 +1,20 @@
+학습 전략
+1. 256 256 으로 먼저 학습 시작, 이때 명령어 : 
+cd D3Net
+python train_sidl.py \
+  --train_dir ./data/SIDL/train \
+  --val_dir ./data/SIDL/val \
+  --n_epochs 150 \
+  --batch_size 8 \
+  --img_size 256 \
+  --val_img_size 512 \
+  --val_batch_size 2 \
+  --lr 0.0001 \
+  --model_folder ./ckpt/sidl_scratch_4090_crop256 \
+  --n_cpu 8 \
+  --val_interval 5 \
+  --patience 30 \
+  --types finger,dust,scratch,water,mixed,clean 
+
+2. best checkpoint에서 512 512 로 fine tune
+

@@ -1,0 +1,53 @@
+\begin{table}[H]
+\centering
+\caption{Validation summary of D3Net SIDL experiments. 확인되지 않은 추가 결과는 포함하지 않았다.}
+\label{tab:main}
+\small
+\begin{tabularx}{\linewidth}{l c c c c X}
+\toprule
+Run & Train crop & Best epoch & PSNR & SSIM & Notes \\
+\midrule
+128 crop baseline & 128 & 34 & 23.33 & 0.8357 & 초기 exploratory baseline; incremental task/data addition으로 완전 통제 실험은 아님 \\
+256 crop main & 256 & 34 & \textbf{23.82} & 0.8398 & fixed final dataset에서 수행한 main controlled run \\
+256 low-LR polishing & 256 & 3 & 23.76 & \textbf{0.8409} & 256 best에서 LR $1\times10^{-5}$로 fine-tuning; PSNR은 main run 미달 \\
+512 refinement & 512 & 2 & 23.27 & 0.8336 & 256 best에서 LR $1\times10^{-5}$, batch size 1로 refinement; negative result \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{256 crop main run의 difficulty-wise validation breakdown.}
+\label{tab:difficulty}
+\small
+\begin{tabular}{lcc}
+\toprule
+Difficulty & PSNR (dB) & SSIM \\
+\midrule
+Easy & 27.00 & 0.8812 \\
+Medium & 25.36 & 0.8862 \\
+Hard & 20.33 & 0.7743 \\
+\midrule
+Overall & \textbf{23.82} & \textbf{0.8398} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{256 crop main run의 contamination type-wise validation average.}
+\label{tab:type}
+\small
+\begin{tabular}{lcc}
+\toprule
+Type & PSNR (dB) & SSIM \\
+\midrule
+Clean & 29.93 & 0.9113 \\
+Dust & 21.89 & 0.8203 \\
+Finger & 21.80 & 0.7858 \\
+Mixed & 20.48 & 0.8269 \\
+Scratch & 25.07 & 0.8488 \\
+Water & 22.93 & 0.8423 \\
+\bottomrule
+\end{tabular}
+\end{table}
