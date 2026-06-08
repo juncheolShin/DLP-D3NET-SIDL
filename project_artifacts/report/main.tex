@@ -26,10 +26,17 @@
 \setlength{\parskip}{0.22em}
 \setlength{\parindent}{0.8em}
 \renewcommand{\arraystretch}{1.10}
+\setcounter{topnumber}{5}
+\setcounter{bottomnumber}{5}
+\setcounter{totalnumber}{8}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.80}
 
 \title{\vspace{-1.7em}\textbf{D3Net-based All-in-One Restoration for Smartphone Images with Dirty Lenses}}
-\author{TODO: 이름 / Deep Learning Programming}
-\date{SIDL Dirty Lens Image Restoration Final Project}
+\author{20223081 신준철 \\ Deep Learning Programming}
+\date{}
 
 \begin{document}
 \maketitle
@@ -38,7 +45,7 @@
 \begin{abstract}
 스마트폰 카메라는 일상적으로 사용되지만 렌즈 표면의 dust, fingerprint, scratch, water drop과 같은 오염에 의해 복합적인 영상 열화를 겪는다.
 본 프로젝트는 all-in-one image restoration 모델인 D3Net을 SIDL dirty lens restoration에 적용하고, patch size와 refinement strategy가 복원 성능에 미치는 영향을 분석한다.
-고정된 최종 SIDL train/validation split에서 256$\times$256 crop으로 scratch training한 D3Net은 validation 기준 23.82 dB / SSIM 0.8398을 달성하였다.
+고정된 최종 SIDL train/validation split에서 256$\times$256 crop으로 continued training한 D3Net은 epoch 73 validation 기준 23.86 dB / SSIM 0.8419를 달성하였다.
 128$\times$128 baseline은 23.33 dB / 0.8357로 낮았고, 256 best checkpoint에서 시작한 512$\times$512 refinement는 23.27 dB / 0.8336으로 하락하였다.
 결과는 dirty lens artifact 복원에 충분한 spatial context가 중요하지만, 큰 patch가 항상 유리하지는 않으며 crop distribution, augmentation, batch dynamics, optimization stability 사이의 trade-off가 존재함을 보여준다.
 \end{abstract}
@@ -54,11 +61,11 @@ SIDL은 이러한 문제를 실제 스마트폰 촬영 환경에서 paired clean
 또한 \textit{patch size와 refinement strategy는 성능에 어떤 영향을 주며, Hard difficulty 특히 Dust/Mixed contamination에서 병목이 왜 발생하는가?}를 분석한다.
 
 본 보고서의 기여는 세 가지다.
-첫째, D3Net \cite{wang2025d3net}을 SIDL dirty lens restoration에 적용하여 제한된 수업 프로젝트 예산에서 scratch adaptation을 수행하였다.
+첫째, D3Net \cite{wang2025d3net}을 SIDL dirty lens restoration에 적용하여 제한된 프로젝트 예산에서 scratch adaptation을 수행하였다.
 둘째, 128/256/512 patch-size 및 refinement strategy를 비교하여 256$\times$256 crop training이 가장 안정적임을 확인하였다.
 셋째, difficulty/type별 validation breakdown을 통해 최종 성능 병목이 Hard Dust와 Hard Mixed 계열에 집중됨을 보였다.
-중요하게도 본 보고서는 D3Net이 SIDL에서 SOTA를 달성했다고 주장하지 않는다.
-대신 D3Net이라는 degradation-adaptive all-in-one backbone을 SIDL에 적용했을 때 어떤 조건에서 안정적으로 학습되는지, 그리고 어떤 조건에서 성능이 무너지는지를 분석하는 adaptation study로 해석한다.
+
+본 보고서는 SIDL 데이터셋에서 SOTA 성능을 달성하는 것을 목표로 하지 않았다. 대신 D3Net이라는 degradation-adaptive all-in-one backbone을 SIDL에 적용했을 때 어떤 조건에서 안정적으로 학습되는지, 그리고 어떤 조건에서 성능이 무너지는지를 분석하는 adaptation study로 해석한다.
 
 \section{Related Work and Background}
 \textbf{SIDL dataset.}
@@ -88,9 +95,9 @@ D3Net 원 논문은 128$\times$128 crop으로 장기간 학습한 설정을 사�
 \end{equation}
 이 residual formulation은 dirty input의 장면 구조를 보존하면서 contamination으로 인한 local/global artifact를 보정하는 방향으로 학습을 유도한다.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.98\linewidth,height=0.38\textheight,keepaspectratio]{figures/d3net_architecture_paper.pdf}
+    \includegraphics[width=0.92\linewidth,height=0.30\textheight,keepaspectratio]{figures/d3net_architecture_paper.pdf}
     \caption{D3Net architecture from the original paper \cite{wang2025d3net}. 모델은 restoration reconstruction branch와 degradation decomposition branch로 구성되며, CDDA가 degradation correction prompt와 strategy prompt를 생성한다.}
     \label{fig:d3net}
 \end{figure}
@@ -120,9 +127,9 @@ DDB 내부의 Decision Unit(DU)은 prompt와 image feature를 이용해 Adaptive
 ADB는 prompt-conditioned operation을 통해 오염 제거에 필요한 feature 변환을 수행한다.
 이러한 동적 구조는 SIDL처럼 degradation type이 하나로 고정되지 않고 dust, scratch, water, fingerprint, mixed contamination이 섞인 all-in-one restoration 문제에 적용할 의미가 있다.
 
-\begin{figure}[t]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.78\linewidth,height=0.30\textheight,keepaspectratio]{figures/d3net_ddm_paper.pdf}
+    \includegraphics[width=0.70\linewidth,height=0.22\textheight,keepaspectratio]{figures/d3net_ddm_paper.pdf}
     \caption{Dynamic Decomposition Mechanism from the original D3Net paper \cite{wang2025d3net}. DUs는 ADB 활성 여부를 결정하고, ADBs는 prompt-conditioned feature transformation을 수행한다.}
     \label{fig:ddm}
 \end{figure}
@@ -135,11 +142,22 @@ Validation은 full 512$\times$512 center crop 기준으로 수행하였다.
 
 \textbf{Training configuration.}
 메인 실험은 D3Net을 pretrained checkpoint 없이 scratch training한 결과이다.
-256$\times$256 crop run은 fixed final dataset에서 수행한 main controlled experiment이고, best validation checkpoint는 epoch 34에서 얻어졌다.
+256$\times$256 crop run은 fixed final dataset에서 수행한 main controlled experiment이고, 기존 best validation checkpoint는 epoch 34에서 23.82 dB / 0.8398을 기록하였다.
+이후 latest checkpoint에서 256$\times$256 continued training을 수행한 결과 epoch 73에서 23.86 dB / 0.8419의 current best를 얻었다.
 Loss는 normalized RGB tensor 기준 L1 loss를 사용하였고, optimizer는 Adam($\beta_1=0.9,\beta_2=0.999$) 및 cosine annealing scheduler를 사용하였다.
 학습 하드웨어는 single RTX 4090이다.
-Validation은 denormalized output과 target을 $[0,1]$ 범위로 clamp한 뒤 PSNR/SSIM을 image-wise로 계산하였다.
+Validation에서는 D3Net이 예측한 residual을 입력 영상에 더해 최종 복원 영상을 생성하였다.
+이후 restored output과 target을 ImageNet mean/std 기준으로 denormalize하고 $[0,1]$ 범위로 clamp한 뒤 PSNR/SSIM을 image-wise로 계산하였다.
+각 image 단위 metric은 contamination type과 difficulty level 기준으로 평균 집계하였다.
 본 실험은 official D3Net 수준으로 충분한 epoch를 사용해 완전 수렴시킨 연구가 아니라, 수업 프로젝트의 제한된 시간과 compute budget 안에서 수행한 adaptation이다.
+
+PSNR은 복원 영상과 GT 영상 사이의 mean squared error를 기반으로 pixel-level fidelity를 측정한다.
+본 실험에서는 denormalized image를 $[0,1]$ 범위로 clamp한 뒤 PSNR을
+\begin{equation}
+    \mathrm{PSNR} = 20 \log_{10}\left(\frac{1}{\sqrt{\mathrm{MSE}}}\right)
+\end{equation}
+로 계산하였다.
+SSIM은 luminance, contrast, structure를 고려하여 복원 영상이 GT 구조를 얼마나 보존하는지 평가하는 지표이다.
 
 \textbf{Ablation design.}
 128$\times$128 crop baseline은 초기 실험으로, incremental task/data addition이 있었기 때문에 완전히 통제된 비교는 아니다.
@@ -157,34 +175,47 @@ Validation은 denormalized output과 target을 $[0,1]$ 범위로 clamp한 뒤 PS
 
 \input{tables/sidl_airnet_diffuir_baselines.tex}
 
-표 \ref{tab:sidl_airnet_diffuir}는 사용자가 비교 대상으로 지정한 AirNet과 DiffUIR의 SIDL 결과를 정리한 것이다.
-두 모델은 SIDL에서 all-in-one 방식으로 학습/평가된 baseline이므로, 본 프로젝트의 D3Net adaptation 결과를 해석하는 데 직접적인 task context를 제공한다.
-다만 SIDL 논문의 test setting과 본 프로젝트의 validation setting은 완전히 동일하지 않으므로, 이 표는 엄밀한 leaderboard 비교가 아니라 문제 난이도와 성능 범위를 이해하기 위한 비교로 사용한다.
+표 \ref{tab:sidl_airnet_diffuir}는 SIDL 논문에서 제시한 AirNet과 DiffUIR baseline을 논문 Table 2 형식에 맞춰 정리하고, 본 프로젝트의 epoch 73 D3Net 256 crop 결과를 같은 contamination type 및 difficulty 축에 함께 배치한 것이다.
+AirNet과 DiffUIR는 SIDL 논문의 test-set 결과이고, D3Net은 본 프로젝트의 validation-set 결과이므로 완전히 동일한 split의 leaderboard 비교는 아니다.
+따라서 이 표는 SOTA 주장보다는 기존 baseline의 성능 범위 안에서 D3Net adaptation 결과가 어떤 difficulty/type에서 강하거나 약한지 해석하기 위한 context로 사용한다.
 
 \input{tables/results_main.tex}
 
-Main controlled run인 256$\times$256 crop training은 23.82 dB / 0.8398로 가장 높은 PSNR을 보였다.
+256$\times$256 continued training은 epoch 73에서 23.86 dB / 0.8419로 current best validation score를 보였다.
+기존 epoch 34 checkpoint의 23.82 dB / 0.8398과 비교하면 PSNR은 0.04 dB, SSIM은 0.0021 상승하였다.
 128 baseline은 23.33 dB / 0.8357에 그쳤고, 512 refinement는 23.27 dB / 0.8336으로 하락하였다.
-256 low-LR polishing은 SSIM은 0.8409로 약간 높았으나 PSNR은 23.76 dB로 main 256 best를 넘지 못했다.
+256 low-LR polishing은 SSIM은 0.8409까지 상승했으나 PSNR은 23.76 dB로 epoch 73 continued checkpoint를 넘지 못했다.
+이 결과는 단순히 입력 crop을 크게 만드는 것이 성능 향상으로 이어지지 않음을 보여준다.
+128 crop은 학습 안정성 측면에서는 부담이 작지만, dirty lens degradation처럼 넓은 영역의 contrast 변화와 local artifact가 함께 나타나는 문제에서는 충분한 주변 문맥을 제공하지 못할 수 있다.
+반대로 512 crop refinement는 전체 patch를 더 넓게 볼 수 있다는 장점이 있지만, batch size가 1로 줄어드는 조건에서는 gradient가 불안정해지고 random crop augmentation 효과도 약해진다.
+따라서 본 실험에서 256 crop은 spatial context, augmentation diversity, batch stability 사이의 가장 현실적인 균형점으로 해석된다.
 
-\begin{figure}[t]
+Low-LR polishing 결과도 비슷한 결론을 뒷받침한다.
+Epoch-34 256 best checkpoint에서 learning rate를 $1\times10^{-5}$로 낮춰 추가 학습했을 때 SSIM은 0.8398에서 0.8409로 소폭 상승했지만, PSNR은 23.82 dB에서 23.76 dB로 감소하였다.
+이는 추가 학습이 구조적 유사도에는 약간 유리하게 작용했을 수 있으나, pixel-level fidelity 관점에서는 이미 main checkpoint가 더 좋은 균형에 도달했음을 의미한다.
+반면 latest checkpoint에서 이어간 256 continued training은 epoch 73에서 PSNR과 SSIM을 동시에 개선했으므로, 현재 보고서의 최종 후보는 epoch 73 checkpoint로 갱신한다.
+
+Epoch 73 checkpoint는 Hard difficulty 복원 성능을 개선하는 대신 Easy difficulty PSNR을 일부 희생하였다.
+Easy average는 epoch 34의 27.00 dB / 0.8812에서 epoch 73의 26.66 dB / 0.8810으로 낮아졌지만, Hard average는 20.33 dB / 0.7743에서 20.59 dB / 0.7775로 상승하였다.
+이는 all-in-one restoration에서 강한 residual correction이 심한 오염에는 도움이 되지만, 약한 오염 sample에는 over-correction으로 작용할 수 있는 cross-difficulty trade-off를 시사한다.
+
+\begin{figure}[H]
     \centering
     \input{figures/patch_ablation_plot_placeholder.tex}
-    \caption{Patch-size/refinement ablation. 256 crop training이 가장 높은 validation PSNR을 달성하였고, 512 refinement는 더 큰 context에도 불구하고 성능이 하락하였다.}
+    \caption{Patch-size/refinement ablation. 256 continued training이 가장 높은 validation PSNR을 달성하였고, 512 refinement는 더 큰 context에도 불구하고 성능이 하락하였다.}
     \label{fig:ablation}
 \end{figure}
 
-\input{tables/ablation_table.tex}
-
 Difficulty-wise 결과는 Hard split에서 큰 하락을 보인다.
-256 best 기준 Easy average는 27.00 dB / 0.8812, Medium average는 25.36 dB / 0.8862, Hard average는 20.33 dB / 0.7743이다.
-Type-wise average에서는 clean이 29.93 dB / 0.9113으로 가장 높고, mixed가 20.48 dB / 0.8269, finger가 21.80 dB / 0.7858, dust가 21.89 dB / 0.8203으로 낮다.
-특히 Hard Dust는 16.86 dB / 0.7065, Hard Mixed는 17.62 dB / 0.7843으로 주요 병목에 해당한다.
+Epoch 73 기준 Easy average는 26.66 dB / 0.8810, Medium average는 25.33 dB / 0.8877, Hard average는 20.59 dB / 0.7775이다.
+Type-wise average에서는 clean이 29.87 dB / 0.9125로 가장 높고, mixed가 20.67 dB / 0.8311, finger가 21.97 dB / 0.7897, dust가 21.90 dB / 0.8217로 낮다.
+Type-wise 변화에서는 Finger와 Mixed가 각각 +0.17 dB / +0.0039, +0.19 dB / +0.0042로 개선에 기여했고, Clean과 Water의 PSNR은 각각 0.06 dB 감소하였다.
+특히 Hard Dust는 17.05 dB / 0.7086, Hard Mixed는 17.98 dB / 0.7900으로 여전히 주요 병목에 해당한다.
 
-\begin{figure}[p]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{figures/qualitative_grid_placeholder.png}
-    \caption{256 best checkpoint 기반 qualitative examples. 각 예시는 input / D3Net output / GT 비교 패널이며, finger-hard, dust-medium, scratch-hard, water-hard, mixed-medium sample을 포함한다. The figure is height-limited to prevent page overflow and clipping.}
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{figures/qualitative_grid_placeholder.png}
+    \caption{D3Net qualitative examples. 각 예시는 input / D3Net output / GT 비교 패널이며, finger-hard, dust-medium, scratch-hard, water-hard, mixed-medium sample을 포함한다. The figure is height-limited to prevent page overflow and clipping.}
     \label{fig:qualitative}
 \end{figure}
 \FloatBarrier
@@ -195,6 +226,10 @@ Type-wise average에서는 clean이 29.93 dB / 0.9113으로 가장 높고, mixed
 렌즈 오염은 local texture만의 문제가 아니라 영상 전체의 contrast, veiling, scattering, low-frequency distortion과 연결된다.
 특히 water drop이나 fingerprint는 crop 내부의 texture뿐 아니라 주변 배경과의 contrast 관계를 이용해야 복원 방향을 안정적으로 정할 수 있다.
 256$\times$256 crop은 local artifact와 주변 context를 함께 볼 수 있으면서도 batch size와 augmentation 다양성을 유지할 수 있어 가장 안정적인 trade-off를 만들었다.
+또한 256 crop은 512 patch에서 다양한 위치를 반복적으로 샘플링하기 때문에, 같은 원본 patch에서도 서로 다른 local composition을 학습에 제공한다.
+이는 SIDL처럼 오염이 이미지 전체에 균일하게 퍼져 있지 않고 국소적으로 나타나는 경우 중요하다.
+예를 들어 dust와 scratch는 특정 위치에 작은 고주파 artifact를 만들고, water나 fingerprint는 넓은 영역의 blur나 contrast shift를 만든다.
+256 crop은 이러한 local artifact와 주변 배경을 동시에 포함할 가능성이 높으면서도, 512 full patch보다 더 많은 crop variation을 제공한다.
 
 \textbf{Why 512 refinement failed.}
 512$\times$512 refinement는 더 큰 context를 제공하지만 성능은 23.27 dB로 하락했다.
@@ -204,10 +239,15 @@ Type-wise average에서는 clean이 29.93 dB / 0.9113으로 가장 높고, mixed
 512 refinement는 batch size가 1로 줄어 gradient estimate가 불안정해지고, cosine schedule 및 low learning rate 조건에서도 optimization이 민감해질 수 있다.
 세 번째는 D3Net의 Fourier/prompt branch가 input scale 또는 crop distribution 변화에 민감할 가능성이다.
 따라서 patch size는 단순히 클수록 좋은 hyperparameter가 아니라 spatial context, augmentation, batch size, optimization stability 사이의 균형으로 보아야 한다.
+특히 Fourier branch는 입력의 frequency distribution을 활용하므로, crop 크기와 sampling 방식이 바뀌면 모델이 보는 frequency statistics도 달라질 수 있다.
+256 crop에서 학습된 checkpoint를 512 crop으로 바로 refine할 경우, reconstruction branch뿐 아니라 degradation prompt를 만드는 branch도 새로운 입력 통계에 적응해야 한다.
+이 과정이 충분히 길거나 안정적으로 진행되지 않으면, 더 큰 context가 있어도 실제 validation metric은 낮아질 수 있다.
+본 실험의 512 refinement는 epoch 2에서 best를 기록했고 더 긴 안정화 과정을 거치지 못했으므로, 512 crop 자체의 가능성을 완전히 배제하기보다는 현재 compute budget에서 불안정했던 설정으로 해석하는 것이 적절하다.
 
 \textbf{Why sufficient training budget matters.}
 D3Net 원 논문은 128$\times$128 crop과 약 1200 epoch 수준의 장기 학습을 사용한 것으로 확인하였다.
-이에 비해 본 프로젝트의 main run은 epoch 34에서 best를 기록했고 epoch 64에서 early stopping되었다.
+이에 비해 본 프로젝트의 main run은 epoch 34에서 기존 best를 기록했고, 이후 continued training을 통해 epoch 73에서 current best를 기록하였다.
+그러나 epoch 73 역시 원 D3Net의 장기 학습 규모와 비교하면 매우 짧은 학습이다.
 따라서 본 결과는 D3Net의 충분한 수렴 성능이라기보다, 제한된 시간 내 scratch training에서 얻은 성능이다.
 D3Net은 dynamic decision과 prompt-conditioned feature transformation을 포함하기 때문에, 짧은 학습에서는 degradation별 routing과 feature decomposition이 충분히 안정화되지 않았을 수 있다.
 이 점은 AirNet/DiffUIR 같은 SIDL baseline과의 차이를 해석할 때 반드시 고려되어야 한다.
@@ -218,11 +258,18 @@ Dust는 작은 입자에 의한 local scattering과 contrast 감소가 섞이고
 L1 loss는 평균적인 pixel fidelity를 높이는 데 유리하지만, 심한 오염에서 perceptual structure나 local contrast recovery를 충분히 강하게 유도하지 못할 수 있다.
 또한 validation metric인 PSNR/SSIM은 강한 contamination이 남은 영역에 민감하므로, Hard split에서 성능 하락이 더 뚜렷하게 나타난다.
 
+\textbf{Loss-metric mismatch.}
+본 실험에서는 normalized RGB tensor 기준 L1 loss로 학습했지만, 평가는 denormalized $[0,1]$ image 기준 PSNR/SSIM으로 수행하였다.
+따라서 training objective와 evaluation metric 사이에 mismatch가 존재한다.
+이 mismatch는 validation PSNR의 느린 수렴이나 checkpoint별 Easy/Hard 성능 trade-off에 영향을 주었을 가능성이 있다.
+향후 실험에서는 Charbonnier loss, L1 + small MSE hybrid loss, denormalized-space MSE polishing, difficulty-aware weighting, frequency/edge-aware loss를 비교할 필요가 있다.
+
 \section{Conclusion}
 본 프로젝트는 D3Net을 SIDL dirty lens restoration에 적용하고 patch-size/refinement ablation을 분석하였다.
-최종 main controlled run에서는 256$\times$256 crop scratch training이 23.82 dB / SSIM 0.8398로 가장 안정적인 성능을 보였다.
+최종 후보인 epoch 73 continued checkpoint는 256$\times$256 crop setting에서 23.86 dB / SSIM 0.8419를 기록하였다.
+이는 기존 epoch 34 checkpoint보다 +0.04 dB PSNR, +0.0021 SSIM 개선된 결과이다.
 반면 512$\times$512 refinement는 큰 spatial context에도 불구하고 성능이 하락했으며, 이는 patch-size-induced training distribution shift와 batch size 감소에 따른 optimization instability를 시사한다.
-향후 연구에서는 official-scale long training 또는 pretrained D3Net, TTA/self-ensemble, difficulty-aware sampling, frequency-aware loss, perceptual/edge-aware loss, 그리고 AirNet/DiffUIR와 동일 split 및 동일 budget에서의 통제된 비교가 필요하다.
+향후 연구에서는 official-scale long training 또는 pretrained D3Net, TTA/self-ensemble, difficulty-aware sampling, Charbonnier/L1+MSE/frequency-aware/perceptual/edge-aware loss, 그리고 AirNet/DiffUIR와 동일 split 및 동일 budget에서의 통제된 비교가 필요하다.
 
 \bibliographystyle{unsrt}
 \bibliography{references}
