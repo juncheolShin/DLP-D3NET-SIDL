@@ -9,7 +9,7 @@ Run & Init. & Train crop & Best epoch & PSNR & SSIM \\
 \midrule
 128 crop baseline & scratch & 128 & 34 & 23.33 & 0.8357 \\
 256 crop main & scratch & 256 & 34 & 23.82 & 0.8398 \\
-256 continued & latest & 256 & 73 & \textbf{23.86} & \textbf{0.8419} \\
+256 continued, official test & latest & 256 & 73 & \textbf{24.55} & \textbf{0.8507} \\
 256 low-LR polishing & 256 best & 256 & 3 & 23.76 & 0.8409 \\
 512 refinement & 256 best & 512 & 2 & 23.27 & 0.8336 \\
 \bottomrule
@@ -19,18 +19,18 @@ Run & Init. & Train crop & Best epoch & PSNR & SSIM \\
 
 \begin{table}[H]
 \centering
-\caption{Difficulty-wise validation breakdown of the epoch-73 256 continued checkpoint.}
+\caption{Difficulty-wise official leaderboard breakdown of the epoch-73 256 continued checkpoint.}
 \label{tab:difficulty}
 \small
 \begin{tabular}{lcc}
 \toprule
 Difficulty & PSNR (dB) & SSIM \\
 \midrule
-Easy & 26.66 & 0.8810 \\
-Medium & 25.33 & 0.8877 \\
-Hard & 20.59 & 0.7775 \\
+Easy & 28.02 & 0.9051 \\
+Medium & 24.70 & 0.8407 \\
+Hard & 20.92 & 0.8064 \\
 \midrule
-Overall & \textbf{23.86} & \textbf{0.8419} \\
+Overall & \textbf{24.55} & \textbf{0.8507} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -38,40 +38,37 @@ Overall & \textbf{23.86} & \textbf{0.8419} \\
 
 \begin{table}[H]
 \centering
-\caption{Contamination type-wise validation average of the epoch-73 256 continued checkpoint.}
+\caption{Contamination type-wise official leaderboard average of the epoch-73 256 continued checkpoint.}
 \label{tab:type}
 \small
 \begin{tabular}{lcc}
 \toprule
 Type & PSNR (dB) & SSIM \\
 \midrule
-Clean & 29.87 & 0.9125 \\
-Dust & 21.90 & 0.8217 \\
-Finger & 21.97 & 0.7897 \\
-Water & 22.87 & 0.8433 \\
-Scratch & 25.08 & 0.8505 \\
-Mixed & 20.67 & 0.8311 \\
+Clean & 30.47 & 0.9256 \\
+Dust & 22.61 & 0.8312 \\
+Finger & 23.51 & 0.8163 \\
+Water & 23.22 & 0.8357 \\
+Scratch & 25.28 & 0.8695 \\
+Mixed & 22.19 & 0.8261 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[H]
 \centering
-\caption{Difficulty-wise comparison between epoch 34 and epoch 73 checkpoints.}
-\label{tab:epoch34_epoch73}
+\caption{Official leaderboard test-set breakdown of the epoch-73 checkpoint.}
+\label{tab:official_leaderboard}
 \small
-\begin{tabular}{lccc}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccccc}
 \toprule
-Metric & Epoch 34 & Epoch 73 & Change \\
+Difficulty & Clean & Dust & Fingerprint & Water & Scratch & Mixed & Average \\
 \midrule
-Easy PSNR & 27.00 & 26.66 & -0.34 \\
-Easy SSIM & 0.8812 & 0.8810 & -0.0002 \\
-Medium PSNR & 25.36 & 25.33 & -0.03 \\
-Medium SSIM & 0.8862 & 0.8877 & +0.0015 \\
-Hard PSNR & 20.33 & 20.59 & +0.26 \\
-Hard SSIM & 0.7743 & 0.7775 & +0.0032 \\
-Overall PSNR & 23.82 & \textbf{23.86} & +0.04 \\
-Overall SSIM & 0.8398 & \textbf{0.8419} & +0.0021 \\
+Easy & 33.20 / 0.9603 & 25.10 / 0.8926 & 26.95 / 0.8994 & 26.45 / 0.8915 & 28.84 / 0.9123 & 27.56 / 0.8745 & 28.02 / 0.9051 \\
+Medium & 30.57 / 0.9132 & 22.53 / 0.7980 & 25.50 / 0.8554 & 23.73 / 0.8207 & 25.69 / 0.8620 & 20.18 / 0.7950 & 24.70 / 0.8407 \\
+Hard & 27.63 / 0.9033 & 20.21 / 0.8029 & 18.09 / 0.6940 & 19.47 / 0.7950 & 21.32 / 0.8341 & 18.82 / 0.8089 & 20.92 / 0.8064 \\
+Average & 30.47 / 0.9256 & 22.61 / 0.8312 & 23.51 / 0.8163 & 23.22 / 0.8357 & 25.28 / 0.8695 & 22.19 / 0.8261 & \textbf{24.55 / 0.8507} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}

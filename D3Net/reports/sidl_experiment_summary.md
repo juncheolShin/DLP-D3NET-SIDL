@@ -4,6 +4,23 @@
 기준 데이터: `D3Net/data/SIDL/val`  
 평가 지표: PSNR / SSIM
 
+## 0. Official leaderboard submission
+
+Epoch 73 checkpoint from continued 256x256 training was submitted to the official SIDL leaderboard.
+
+| Setting | Checkpoint | Dirty types | GMACs | Parameters | Official test PSNR | Official test SSIM |
+|---|---:|---|---:|---:|---:|---:|
+| 256 continued | epoch 73 | Clean, Dust, Fingerprint, Mixed, Scratch, Water | 771 | 43.8M | **24.55** | **0.8507** |
+
+Official leaderboard breakdown:
+
+| Difficulty | Clean | Dust | Fingerprint | Water | Scratch | Mixed | Average |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Easy | 33.20 / 0.9603 | 25.10 / 0.8926 | 26.95 / 0.8994 | 26.45 / 0.8915 | 28.84 / 0.9123 | 27.56 / 0.8745 | 28.02 / 0.9051 |
+| Medium | 30.57 / 0.9132 | 22.53 / 0.7980 | 25.50 / 0.8554 | 23.73 / 0.8207 | 25.69 / 0.8620 | 20.18 / 0.7950 | 24.70 / 0.8407 |
+| Hard | 27.63 / 0.9033 | 20.21 / 0.8029 | 18.09 / 0.6940 | 19.47 / 0.7950 | 21.32 / 0.8341 | 18.82 / 0.8089 | 20.92 / 0.8064 |
+| Average | 30.47 / 0.9256 | 22.61 / 0.8312 | 23.51 / 0.8163 | 23.22 / 0.8357 | 25.28 / 0.8695 | 22.19 / 0.8261 | 24.55 / 0.8507 |
+
 ## 1. 128 run best table
 
 `sidl_finetune` 체크포인트 기준이다. 학습 crop은 README 기본 설정상 128, validation crop은 512로 기록되어 있다.

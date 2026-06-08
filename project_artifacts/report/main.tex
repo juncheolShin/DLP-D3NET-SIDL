@@ -45,7 +45,7 @@
 \begin{abstract}
 스마트폰 카메라는 일상적으로 사용되지만 렌즈 표면의 dust, fingerprint, scratch, water drop과 같은 오염에 의해 복합적인 영상 열화를 겪는다.
 본 프로젝트는 all-in-one image restoration 모델인 D3Net을 SIDL dirty lens restoration에 적용하고, patch size와 refinement strategy가 복원 성능에 미치는 영향을 분석한다.
-고정된 최종 SIDL train/validation split에서 256$\times$256 crop으로 continued training한 D3Net은 epoch 73 validation 기준 23.86 dB / SSIM 0.8419를 달성하였다.
+256$\times$256 crop으로 continued training한 epoch 73 D3Net checkpoint를 SIDL official leaderboard test set에 제출한 결과, 24.55 dB / SSIM 0.8507을 달성하였다.
 128$\times$128 baseline은 23.33 dB / 0.8357로 낮았고, 256 best checkpoint에서 시작한 512$\times$512 refinement는 23.27 dB / 0.8336으로 하락하였다.
 결과는 dirty lens artifact 복원에 충분한 spatial context가 중요하지만, 큰 patch가 항상 유리하지는 않으며 crop distribution, augmentation, batch dynamics, optimization stability 사이의 trade-off가 존재함을 보여준다.
 \end{abstract}
@@ -143,7 +143,7 @@ Validation은 full 512$\times$512 center crop 기준으로 수행하였다.
 \textbf{Training configuration.}
 메인 실험은 D3Net을 pretrained checkpoint 없이 scratch training한 결과이다.
 256$\times$256 crop run은 fixed final dataset에서 수행한 main controlled experiment이고, 기존 best validation checkpoint는 epoch 34에서 23.82 dB / 0.8398을 기록하였다.
-이후 latest checkpoint에서 256$\times$256 continued training을 수행한 결과 epoch 73에서 23.86 dB / 0.8419의 current best를 얻었다.
+이후 latest checkpoint에서 256$\times$256 continued training을 수행한 결과 epoch 73 checkpoint를 official leaderboard에 제출하였고, test-set 기준 24.55 dB / 0.8507을 얻었다.
 Loss는 normalized RGB tensor 기준 L1 loss를 사용하였고, optimizer는 Adam($\beta_1=0.9,\beta_2=0.999$) 및 cosine annealing scheduler를 사용하였다.
 학습 하드웨어는 single RTX 4090이다.
 Validation에서는 D3Net이 예측한 residual을 입력 영상에 더해 최종 복원 영상을 생성하였다.
@@ -176,13 +176,13 @@ SSIM은 luminance, contrast, structure를 고려하여 복원 영상이 GT 구�
 \input{tables/sidl_airnet_diffuir_baselines.tex}
 
 표 \ref{tab:sidl_airnet_diffuir}는 SIDL 논문에서 제시한 AirNet과 DiffUIR baseline을 논문 Table 2 형식에 맞춰 정리하고, 본 프로젝트의 epoch 73 D3Net 256 crop 결과를 같은 contamination type 및 difficulty 축에 함께 배치한 것이다.
-AirNet과 DiffUIR는 SIDL 논문의 test-set 결과이고, D3Net은 본 프로젝트의 validation-set 결과이므로 완전히 동일한 split의 leaderboard 비교는 아니다.
-따라서 이 표는 SOTA 주장보다는 기존 baseline의 성능 범위 안에서 D3Net adaptation 결과가 어떤 difficulty/type에서 강하거나 약한지 해석하기 위한 context로 사용한다.
+AirNet과 DiffUIR는 SIDL 논문의 test-set 결과이고, D3Net은 본 프로젝트의 official leaderboard submission 결과이다.
+따라서 이 표는 기존 baseline의 성능 범위 안에서 D3Net adaptation 결과가 어떤 difficulty/type에서 강하거나 약한지 해석하기 위한 context로 사용한다.
 
 \input{tables/results_main.tex}
 
-256$\times$256 continued training은 epoch 73에서 23.86 dB / 0.8419로 current best validation score를 보였다.
-기존 epoch 34 checkpoint의 23.82 dB / 0.8398과 비교하면 PSNR은 0.04 dB, SSIM은 0.0021 상승하였다.
+256$\times$256 continued training의 epoch 73 checkpoint는 official leaderboard test set에서 24.55 dB / 0.8507을 기록하였다.
+해당 제출의 model complexity는 771 GMACs, parameter 수는 43.8M으로 보고되었다.
 128 baseline은 23.33 dB / 0.8357에 그쳤고, 512 refinement는 23.27 dB / 0.8336으로 하락하였다.
 256 low-LR polishing은 SSIM은 0.8409까지 상승했으나 PSNR은 23.76 dB로 epoch 73 continued checkpoint를 넘지 못했다.
 이 결과는 단순히 입력 crop을 크게 만드는 것이 성능 향상으로 이어지지 않음을 보여준다.
@@ -193,11 +193,10 @@ AirNet과 DiffUIR는 SIDL 논문의 test-set 결과이고, D3Net은 본 프로�
 Low-LR polishing 결과도 비슷한 결론을 뒷받침한다.
 Epoch-34 256 best checkpoint에서 learning rate를 $1\times10^{-5}$로 낮춰 추가 학습했을 때 SSIM은 0.8398에서 0.8409로 소폭 상승했지만, PSNR은 23.82 dB에서 23.76 dB로 감소하였다.
 이는 추가 학습이 구조적 유사도에는 약간 유리하게 작용했을 수 있으나, pixel-level fidelity 관점에서는 이미 main checkpoint가 더 좋은 균형에 도달했음을 의미한다.
-반면 latest checkpoint에서 이어간 256 continued training은 epoch 73에서 PSNR과 SSIM을 동시에 개선했으므로, 현재 보고서의 최종 후보는 epoch 73 checkpoint로 갱신한다.
+반면 latest checkpoint에서 이어간 256 continued training은 official test set에서 가장 높은 최종 제출 성능을 보였으므로, 현재 보고서의 최종 후보는 epoch 73 checkpoint로 갱신한다.
 
-Epoch 73 checkpoint는 Hard difficulty 복원 성능을 개선하는 대신 Easy difficulty PSNR을 일부 희생하였다.
-Easy average는 epoch 34의 27.00 dB / 0.8812에서 epoch 73의 26.66 dB / 0.8810으로 낮아졌지만, Hard average는 20.33 dB / 0.7743에서 20.59 dB / 0.7775로 상승하였다.
-이는 all-in-one restoration에서 강한 residual correction이 심한 오염에는 도움이 되지만, 약한 오염 sample에는 over-correction으로 작용할 수 있는 cross-difficulty trade-off를 시사한다.
+Official leaderboard 기준 difficulty average는 Easy 28.02 dB / 0.9051, Medium 24.70 dB / 0.8407, Hard 20.92 dB / 0.8064이다.
+Hard split은 여전히 가장 낮은 성능 영역이며, 이는 all-in-one restoration에서 심한 오염과 약한 오염을 동시에 다루는 것이 어렵다는 점을 보여준다.
 
 \begin{figure}[H]
     \centering
@@ -207,10 +206,9 @@ Easy average는 epoch 34의 27.00 dB / 0.8812에서 epoch 73의 26.66 dB / 0.881
 \end{figure}
 
 Difficulty-wise 결과는 Hard split에서 큰 하락을 보인다.
-Epoch 73 기준 Easy average는 26.66 dB / 0.8810, Medium average는 25.33 dB / 0.8877, Hard average는 20.59 dB / 0.7775이다.
-Type-wise average에서는 clean이 29.87 dB / 0.9125로 가장 높고, mixed가 20.67 dB / 0.8311, finger가 21.97 dB / 0.7897, dust가 21.90 dB / 0.8217로 낮다.
-Type-wise 변화에서는 Finger와 Mixed가 각각 +0.17 dB / +0.0039, +0.19 dB / +0.0042로 개선에 기여했고, Clean과 Water의 PSNR은 각각 0.06 dB 감소하였다.
-특히 Hard Dust는 17.05 dB / 0.7086, Hard Mixed는 17.98 dB / 0.7900으로 여전히 주요 병목에 해당한다.
+Official leaderboard 기준 Easy average는 28.02 dB / 0.9051, Medium average는 24.70 dB / 0.8407, Hard average는 20.92 dB / 0.8064이다.
+Type-wise average에서는 clean이 30.47 dB / 0.9256으로 가장 높고, mixed가 22.19 dB / 0.8261, dust가 22.61 dB / 0.8312, water가 23.22 dB / 0.8357로 낮다.
+특히 Hard Fingerprint는 18.09 dB / 0.6940, Hard Mixed는 18.82 dB / 0.8089, Hard Water는 19.47 dB / 0.7950으로 주요 병목에 해당한다.
 
 \begin{figure}[H]
     \centering
@@ -266,8 +264,7 @@ L1 loss는 평균적인 pixel fidelity를 높이는 데 유리하지만, 심한 
 
 \section{Conclusion}
 본 프로젝트는 D3Net을 SIDL dirty lens restoration에 적용하고 patch-size/refinement ablation을 분석하였다.
-최종 후보인 epoch 73 continued checkpoint는 256$\times$256 crop setting에서 23.86 dB / SSIM 0.8419를 기록하였다.
-이는 기존 epoch 34 checkpoint보다 +0.04 dB PSNR, +0.0021 SSIM 개선된 결과이다.
+최종 후보인 epoch 73 continued checkpoint는 SIDL official leaderboard test set에서 24.55 dB / SSIM 0.8507을 기록하였다.
 반면 512$\times$512 refinement는 큰 spatial context에도 불구하고 성능이 하락했으며, 이는 patch-size-induced training distribution shift와 batch size 감소에 따른 optimization instability를 시사한다.
 향후 연구에서는 official-scale long training 또는 pretrained D3Net, TTA/self-ensemble, difficulty-aware sampling, Charbonnier/L1+MSE/frequency-aware/perceptual/edge-aware loss, 그리고 AirNet/DiffUIR와 동일 split 및 동일 budget에서의 통제된 비교가 필요하다.
 

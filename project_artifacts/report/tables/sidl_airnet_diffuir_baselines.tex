@@ -1,6 +1,6 @@
 \begin{table}[H]
 \centering
-\caption{SIDL paper-style baseline comparison. AirNet and DiffUIR values are from the SIDL paper test-set table, while D3Net values are from our epoch-73 validation checkpoint using continued 256 crop training. Because the split and training budget differ, this table is used as task context rather than a strict leaderboard comparison.}
+\caption{SIDL paper-style baseline comparison. AirNet and DiffUIR values are from the SIDL paper test-set table, while D3Net values are from our official leaderboard submission using the epoch-73 checkpoint from continued 256 crop training.}
 \label{tab:sidl_airnet_diffuir}
 \tiny
 \setlength{\tabcolsep}{2.4pt}
@@ -39,9 +39,9 @@ PSNR/SSIM \\
 \midrule
 \multirow{3}{*}{Ours}
 & \multirow{3}{*}{D3Net}
-& Easy   & 32.78 / 0.9542 & 25.07 / 0.8859 & 24.59 / 0.7733 & 26.38 / 0.9196 & 27.84 / 0.8980 & 23.32 / 0.8552 & 26.66 / 0.8810 \\
-& & Medium & 30.26 / 0.9424 & 24.03 / 0.8797 & 23.69 / 0.8467 & 24.05 / 0.8577 & 27.41 / 0.9126 & 22.56 / 0.8869 & 25.33 / 0.8877 \\
-& & Hard   & 27.70 / 0.8502 & 17.05 / 0.7086 & 20.23 / 0.7698 & 20.22 / 0.7986 & 20.38 / 0.7477 & 17.98 / 0.7900 & 20.59 / 0.7775 \\
+& Easy   & 33.20 / 0.9603 & 25.10 / 0.8926 & 26.95 / 0.8994 & 26.45 / 0.8915 & 28.84 / 0.9123 & 27.56 / 0.8745 & 28.02 / 0.9051 \\
+& & Medium & 30.57 / 0.9132 & 22.53 / 0.7980 & 25.50 / 0.8554 & 23.73 / 0.8207 & 25.69 / 0.8620 & 20.18 / 0.7950 & 24.70 / 0.8407 \\
+& & Hard   & 27.63 / 0.9033 & 20.21 / 0.8029 & 18.09 / 0.6940 & 19.47 / 0.7950 & 21.32 / 0.8341 & 18.82 / 0.8089 & 20.92 / 0.8064 \\
 \bottomrule
 \end{tabular}}
 \end{table}

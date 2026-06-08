@@ -10,28 +10,28 @@ The project was developed for **Deep Learning Programming** as a controlled, lim
 - Added a SIDL-specific dataloader, single-GPU training script, validation breakdowns, and qualitative result generation.
 - Compared the adapted D3Net result against SIDL paper baselines including **AirNet** and **DiffUIR**.
 - Analyzed patch-size/refinement behavior across 128, 256, and 512 crop settings.
-- Identified a cross-difficulty trade-off: continued training improved Hard cases while slightly reducing Easy PSNR.
+- Submitted the epoch-73 checkpoint to the official SIDL leaderboard and reported test-set performance, GMACs, and parameter count.
 
-## Current Best Result
+## Official Leaderboard Result
 
-The current best validation checkpoint is from continued 256x256 training.
+The model submitted to the official SIDL leaderboard uses the epoch-73 checkpoint from continued 256x256 training.
 
-| Setting | Checkpoint | PSNR | SSIM |
+| Setting | Checkpoint | Test PSNR | Test SSIM |
 | --- | ---: | ---: | ---: |
-| 256x256 continued training | epoch 73 | **23.86 dB** | **0.8419** |
+| 256x256 continued training | epoch 73 | **24.55 dB** | **0.8507** |
 | 256x256 main run | epoch 34 | 23.82 dB | 0.8398 |
 | 256x256 low-LR polishing | best observed | 23.76 dB | 0.8409 |
 | 512x512 refinement | best observed | 23.27 dB | 0.8336 |
 | 128x128 baseline | epoch 34 | 23.33 dB | 0.8357 |
 
-Compared with the previous epoch-34 checkpoint, the epoch-73 checkpoint improved overall PSNR by **+0.04 dB** and SSIM by **+0.0021**.
+The leaderboard submission reports **771 GMACs** and **43.8M parameters**.
 
 ## Key Findings
 
 - **256x256 crop training was the most stable setting.** It balanced spatial context, crop diversity, and batch stability better than 128 or 512 crop settings.
 - **512x512 refinement did not improve performance.** Although it provides more spatial context, it also reduces batch size to 1 and changes the crop distribution.
-- **Hard cases improved with continued training.** Hard average PSNR increased from 20.33 dB to 20.59 dB.
-- **Easy cases slightly regressed.** Easy average PSNR decreased from 27.00 dB to 26.66 dB, suggesting a cross-difficulty trade-off.
+- **Official test-set average is 24.55 dB / 0.8507.** This is the reported leaderboard result for the epoch-73 checkpoint.
+- **Hard cases remain difficult.** Official Hard average is 20.92 dB / 0.8064, while Easy average is 28.02 dB / 0.9051.
 - **Loss-metric mismatch remains a limitation.** Training uses L1 loss on normalized RGB tensors, while evaluation uses PSNR/SSIM on denormalized [0, 1] images.
 
 ## Project Artifacts
@@ -44,6 +44,15 @@ Compared with the previous epoch-34 checkpoint, the epoch-73 checkpoint improved
 | Experiment summary | [`D3Net/reports/sidl_experiment_summary.md`](D3Net/reports/sidl_experiment_summary.md) |
 | Validation breakdowns | [`D3Net/reports/validation_breakdowns/`](D3Net/reports/validation_breakdowns/) |
 | Qualitative assets | [`D3Net/reports/assets/`](D3Net/reports/assets/) |
+
+## Official Leaderboard Breakdown
+
+| Difficulty | Clean | Dust | Fingerprint | Water | Scratch | Mixed | Average |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Easy | 33.20 / 0.9603 | 25.10 / 0.8926 | 26.95 / 0.8994 | 26.45 / 0.8915 | 28.84 / 0.9123 | 27.56 / 0.8745 | 28.02 / 0.9051 |
+| Medium | 30.57 / 0.9132 | 22.53 / 0.7980 | 25.50 / 0.8554 | 23.73 / 0.8207 | 25.69 / 0.8620 | 20.18 / 0.7950 | 24.70 / 0.8407 |
+| Hard | 27.63 / 0.9033 | 20.21 / 0.8029 | 18.09 / 0.6940 | 19.47 / 0.7950 | 21.32 / 0.8341 | 18.82 / 0.8089 | 20.92 / 0.8064 |
+| Average | 30.47 / 0.9256 | 22.61 / 0.8312 | 23.51 / 0.8163 | 23.22 / 0.8357 | 25.28 / 0.8695 | 22.19 / 0.8261 | 24.55 / 0.8507 |
 
 ## Repository Structure
 
@@ -195,8 +204,8 @@ python test.py \
 
 ## Limitations
 
-- The original D3Net training scale is much larger, roughly 1200 epochs. This project's best checkpoint is epoch 73, so results should be interpreted as limited-budget adaptation.
-- AirNet and DiffUIR values come from the SIDL paper test setting, while D3Net values here are from this project's validation split.
+- The original D3Net training scale is much larger, roughly 1200 epochs. This project's submitted checkpoint is epoch 73, so results should be interpreted as limited-budget adaptation.
+- AirNet and DiffUIR values come from the SIDL paper table. D3Net values here are from the official leaderboard submission unless explicitly marked as internal validation results.
 - The training objective and evaluation metric are not perfectly aligned: L1 loss is computed on normalized tensors, while PSNR/SSIM are computed on denormalized images.
 - Checkpoints and dataset files may be excluded from a public repository due to file size and dataset distribution constraints.
 

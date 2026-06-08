@@ -66,7 +66,7 @@
         <div><strong>Validation</strong><span>512×512 center crop, image-wise PSNR / SSIM</span></div>
         <div><strong>Optimization</strong><span>L1 loss, Adam, cosine LR, single RTX 4090</span></div>
         <div><strong>D3Net original</strong><span>Official setting is roughly 1200 epochs</span></div>
-        <div><strong>Our best</strong><span>Continued 256 training reached epoch 73 best</span></div>
+        <div><strong>Official submission</strong><span>Epoch 73, 771 GMACs, 43.8M parameters</span></div>
         <div><strong>Evaluation</strong><span>Residual output, denormalize, clamp to [0,1], then compute PSNR/SSIM</span></div>
       </div>
     </section>
@@ -85,12 +85,12 @@
           <tr><td class="method-cell" rowspan="3">DiffUIR</td><td class="level-cell">Easy</td><td>34.51</td><td>26.96</td><td>28.82</td><td>27.42</td><td>30.14</td><td>28.22</td><td>29.34</td></tr>
           <tr><td class="level-cell">Medium</td><td>33.25</td><td>22.11</td><td>26.16</td><td>24.65</td><td>27.07</td><td>20.32</td><td>25.36</td></tr>
           <tr><td class="level-cell">Hard</td><td>29.47</td><td>20.38</td><td>18.93</td><td>19.91</td><td>21.27</td><td>18.97</td><td>21.71</td></tr>
-          <tr class="best"><td class="method-cell" rowspan="3">D3Net ours</td><td class="level-cell">Easy</td><td>32.78</td><td>25.07</td><td>24.59</td><td>26.38</td><td>27.84</td><td>23.32</td><td>26.66</td></tr>
-          <tr class="best"><td class="level-cell">Medium</td><td>30.26</td><td>24.03</td><td>23.69</td><td>24.05</td><td>27.41</td><td>22.56</td><td>25.33</td></tr>
-          <tr class="best"><td class="level-cell">Hard</td><td>27.70</td><td>17.05</td><td>20.23</td><td>20.22</td><td>20.38</td><td>17.98</td><td>20.59</td></tr>
+          <tr class="best"><td class="method-cell" rowspan="3">D3Net ours</td><td class="level-cell">Easy</td><td>33.20</td><td>25.10</td><td>26.95</td><td>26.45</td><td>28.84</td><td>27.56</td><td>28.02</td></tr>
+          <tr class="best"><td class="level-cell">Medium</td><td>30.57</td><td>22.53</td><td>25.50</td><td>23.73</td><td>25.69</td><td>20.18</td><td>24.70</td></tr>
+          <tr class="best"><td class="level-cell">Hard</td><td>27.63</td><td>20.21</td><td>18.09</td><td>19.47</td><td>21.32</td><td>18.82</td><td>20.92</td></tr>
         </tbody>
       </table>
-      <p class="caption">AirNet/DiffUIR are SIDL paper test-set values. D3Net is our epoch-73 validation result, so this is task context rather than a strict leaderboard.</p>
+      <p class="caption">AirNet/DiffUIR are SIDL paper test-set values. D3Net is our official leaderboard submission using the epoch-73 checkpoint.</p>
     </section>
 
     <section class="slide">
@@ -103,7 +103,7 @@
             <tbody>
               <tr><td>128 baseline</td><td>scratch</td><td>128</td><td>34</td><td>23.33</td><td>0.8357</td></tr>
               <tr><td>256 main</td><td>scratch</td><td>256</td><td>34</td><td>23.82</td><td>0.8398</td></tr>
-              <tr class="best"><td>256 continued</td><td>latest</td><td>256</td><td>73</td><td>23.86</td><td>0.8419</td></tr>
+              <tr class="best"><td>256 official</td><td>latest</td><td>256</td><td>73</td><td>24.55</td><td>0.8507</td></tr>
               <tr><td>256 low-LR</td><td>256 best</td><td>256</td><td>3</td><td>23.76</td><td>0.8409</td></tr>
               <tr><td>512 refinement</td><td>256 best</td><td>512</td><td>2</td><td>23.27</td><td>0.8336</td></tr>
             </tbody>
@@ -112,7 +112,7 @@
         <div class="bars horizontal-bars">
           <div style="--w:33"><span>128</span><strong>23.33</strong></div>
           <div style="--w:82"><span>256</span><strong>23.82</strong></div>
-          <div class="best" style="--w:86"><span>256 cont.</span><strong>23.86</strong></div>
+          <div class="best" style="--w:100"><span>256 official</span><strong>24.55</strong></div>
           <div style="--w:76"><span>256 polish</span><strong>23.76</strong></div>
           <div style="--w:27"><span>512</span><strong>23.27</strong></div>
         </div>
@@ -123,16 +123,16 @@
       <div class="two-col">
         <div>
           <p class="eyebrow">Interpretation</p>
-          <h2>Cross-Difficulty Trade-off</h2>
+          <h2>Official Test Breakdown</h2>
           <div class="short-points">
-            <span>Overall score improved from 23.82 / 0.8398 to 23.86 / 0.8419.</span>
-            <span>Hard average improved from 20.33 to 20.59 dB.</span>
-            <span>Easy PSNR decreased from 27.00 to 26.66 dB, suggesting mild over-correction.</span>
+            <span>Official leaderboard average: 24.55 dB / 0.8507.</span>
+            <span>Easy average: 28.02 dB / 0.9051.</span>
+            <span>Hard average: 20.92 dB / 0.8064.</span>
           </div>
         </div>
         <div class="limit-card">
           <strong>Key limitation</strong>
-          <p>The original D3Net training scale is roughly 1200 epochs. Our best checkpoint is epoch 73, so the result should be interpreted as limited-budget adaptation.</p>
+          <p>The original D3Net training scale is roughly 1200 epochs. Our submitted checkpoint is epoch 73, so the result should be interpreted as limited-budget adaptation.</p>
           <p>The training loss is L1 on normalized tensors, while evaluation uses PSNR/SSIM on denormalized [0,1] images. This loss-metric mismatch may affect convergence.</p>
         </div>
       </div>
@@ -145,18 +145,18 @@
         <table>
           <thead><tr><th>Type</th><th>Avg. PSNR</th><th>Avg. SSIM</th></tr></thead>
           <tbody>
-            <tr><td>Clean</td><td>29.87</td><td>0.9125</td></tr>
-            <tr><td>Dust</td><td>21.90</td><td>0.8217</td></tr>
-            <tr><td>Finger</td><td>21.97</td><td>0.7897</td></tr>
-            <tr><td>Water</td><td>22.87</td><td>0.8433</td></tr>
-            <tr><td>Scratch</td><td>25.08</td><td>0.8505</td></tr>
-            <tr><td>Mixed</td><td>20.67</td><td>0.8311</td></tr>
+            <tr><td>Clean</td><td>30.47</td><td>0.9256</td></tr>
+            <tr><td>Dust</td><td>22.61</td><td>0.8312</td></tr>
+            <tr><td>Finger</td><td>23.51</td><td>0.8163</td></tr>
+            <tr><td>Water</td><td>23.22</td><td>0.8357</td></tr>
+            <tr><td>Scratch</td><td>25.28</td><td>0.8695</td></tr>
+            <tr><td>Mixed</td><td>22.19</td><td>0.8261</td></tr>
           </tbody>
         </table>
         <div class="bottleneck">
-          <span>Hard Dust</span><strong>17.05 / 0.7086</strong>
-          <span>Hard Mixed</span><strong>17.98 / 0.7900</strong>
-          <small>Severe local scattering and ambiguous mixed contamination remain difficult to separate from true image structure.</small>
+          <span>Hard Finger</span><strong>18.09 / 0.6940</strong>
+          <span>Hard Mixed</span><strong>18.82 / 0.8089</strong>
+          <small>Severe local residue and ambiguous mixed contamination remain difficult to separate from true image structure.</small>
         </div>
       </div>
     </section>
@@ -177,8 +177,8 @@
       <p class="eyebrow">Conclusion</p>
       <h2>Summary & Future Work</h2>
       <div class="conclusion-grid">
-        <div><strong>Main result</strong><span>Epoch 73 continued 256 training: 23.86 dB / 0.8419</span></div>
-        <div><strong>Key finding</strong><span>Hard restoration improved, while Easy PSNR slightly decreased.</span></div>
+        <div><strong>Main result</strong><span>Official test result: 24.55 dB / 0.8507</span></div>
+        <div><strong>Key finding</strong><span>Performance is strong on Clean/Easy, but Hard Finger and Mixed remain difficult.</span></div>
         <div><strong>Limitation</strong><span>The epoch budget is far smaller than the original D3Net training scale.</span></div>
         <div><strong>Future work</strong><span>Long training, pretrained D3Net, 512 curriculum, Charbonnier/L1+MSE losses, and TTA</span></div>
       </div>

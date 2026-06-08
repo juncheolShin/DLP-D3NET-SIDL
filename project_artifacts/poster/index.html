@@ -23,23 +23,23 @@
     <section class="hero-strip">
       <div>
         <span class="kicker">Main result</span>
-        <strong>23.86 dB / 0.8419</strong>
-        <small>Current best validation checkpoint: 256 crop, epoch 73</small>
+        <strong>24.55 dB / 0.8507</strong>
+        <small>Official leaderboard test result: 256 crop, epoch 73</small>
       </div>
       <div>
         <span class="kicker">Comparison scope</span>
         <strong>AirNet / DiffUIR / D3Net</strong>
-        <small>SIDL paper test results vs. our validation results</small>
+        <small>SIDL paper test results vs. our official submission</small>
       </div>
       <div>
         <span class="kicker">Best setting</span>
         <strong>256×256 crop</strong>
-        <small>Continued 256 training improved both PSNR and SSIM</small>
+        <small>Submitted checkpoint: epoch 73, 771 GMACs, 43.8M params</small>
       </div>
       <div>
         <span class="kicker">Main bottleneck</span>
         <strong>Hard Dust / Mixed</strong>
-        <small>Hard split improved, but severe local and mixed contamination remains difficult</small>
+        <small>Hard Fingerprint, Mixed, and Water remain difficult</small>
       </div>
     </section>
 
@@ -72,7 +72,7 @@
         <dl class="setup-list">
           <dt>Model</dt><dd>D3Net, scratch training, 12 ADB blocks</dd>
           <dt>Main run</dt><dd>256×256 random crop, batch 8, LR 1e-4</dd>
-          <dt>Best</dt><dd>Continued 256 training, epoch 73</dd>
+          <dt>Submit</dt><dd>Epoch 73, 771 GMACs, 43.8M params</dd>
           <dt>Loss / Opt.</dt><dd>L1 loss, Adam β=(0.9, 0.999), cosine LR</dd>
           <dt>Validation</dt><dd>512×512 center crop, image-wise PSNR / SSIM</dd>
           <dt>Scope</dt><dd>Limited-budget adaptation, not SIDL SOTA claim</dd>
@@ -81,7 +81,7 @@
 
       <article class="block baseline">
         <h2>4. SIDL Paper Baseline Comparison</h2>
-        <p class="small-note">AirNet and DiffUIR are SIDL paper test-set values. D3Net is our epoch-73 validation checkpoint, so this is task context rather than a strict leaderboard comparison.</p>
+        <p class="small-note">AirNet and DiffUIR are SIDL paper test-set values. D3Net is our official leaderboard submission using the epoch-73 checkpoint.</p>
         <table class="comparison-table">
           <thead>
             <tr><th>Method</th><th>Level</th><th>Clean</th><th>Dust</th><th>Finger</th><th>Water</th><th>Scratch</th><th>Mixed</th><th>Avg.</th></tr>
@@ -93,9 +93,9 @@
             <tr><td class="method-cell" rowspan="3">DiffUIR</td><td class="level-cell">Easy</td><td>34.51/0.9785</td><td>26.96/0.9276</td><td>28.82/0.9331</td><td>27.42/0.9220</td><td>30.14/0.9375</td><td>28.22/0.9021</td><td>29.34/0.9335</td></tr>
             <tr><td class="level-cell">Medium</td><td>33.25/0.9375</td><td>22.11/0.8325</td><td>26.16/0.8856</td><td>24.65/0.8647</td><td>27.07/0.9105</td><td>20.32/0.8368</td><td>25.36/0.8786</td></tr>
             <tr><td class="level-cell">Hard</td><td>29.47/0.9366</td><td>20.38/0.8602</td><td>18.93/0.7763</td><td>19.91/0.8500</td><td>21.27/0.8599</td><td>18.97/0.8409</td><td>21.71/0.8533</td></tr>
-            <tr class="highlight-row"><td class="method-cell" rowspan="3">D3Net ours</td><td class="level-cell">Easy</td><td>32.78/0.9542</td><td>25.07/0.8859</td><td>24.59/0.7733</td><td>26.38/0.9196</td><td>27.84/0.8980</td><td>23.32/0.8552</td><td>26.66/0.8810</td></tr>
-            <tr class="highlight-row"><td class="level-cell">Medium</td><td>30.26/0.9424</td><td>24.03/0.8797</td><td>23.69/0.8467</td><td>24.05/0.8577</td><td>27.41/0.9126</td><td>22.56/0.8869</td><td>25.33/0.8877</td></tr>
-            <tr class="highlight-row"><td class="level-cell">Hard</td><td>27.70/0.8502</td><td>17.05/0.7086</td><td>20.23/0.7698</td><td>20.22/0.7986</td><td>20.38/0.7477</td><td>17.98/0.7900</td><td>20.59/0.7775</td></tr>
+            <tr class="highlight-row"><td class="method-cell" rowspan="3">D3Net ours</td><td class="level-cell">Easy</td><td>33.20/0.9603</td><td>25.10/0.8926</td><td>26.95/0.8994</td><td>26.45/0.8915</td><td>28.84/0.9123</td><td>27.56/0.8745</td><td>28.02/0.9051</td></tr>
+            <tr class="highlight-row"><td class="level-cell">Medium</td><td>30.57/0.9132</td><td>22.53/0.7980</td><td>25.50/0.8554</td><td>23.73/0.8207</td><td>25.69/0.8620</td><td>20.18/0.7950</td><td>24.70/0.8407</td></tr>
+            <tr class="highlight-row"><td class="level-cell">Hard</td><td>27.63/0.9033</td><td>20.21/0.8029</td><td>18.09/0.6940</td><td>19.47/0.7950</td><td>21.32/0.8341</td><td>18.82/0.8089</td><td>20.92/0.8064</td></tr>
           </tbody>
         </table>
       </article>
@@ -109,7 +109,7 @@
           <tbody>
             <tr><td>128 baseline</td><td>scratch</td><td>128</td><td>34</td><td>23.33</td><td>0.8357</td></tr>
             <tr><td>256 main</td><td>scratch</td><td>256</td><td>34</td><td>23.82</td><td>0.8398</td></tr>
-            <tr class="highlight-row"><td>256 continued</td><td>latest</td><td>256</td><td>73</td><td><strong>23.86</strong></td><td><strong>0.8419</strong></td></tr>
+            <tr class="highlight-row"><td>256 official</td><td>latest</td><td>256</td><td>73</td><td><strong>24.55</strong></td><td><strong>0.8507</strong></td></tr>
             <tr><td>256 low-LR</td><td>256 best</td><td>256</td><td>3</td><td>23.76</td><td>0.8409</td></tr>
             <tr><td>512 refinement</td><td>256 best</td><td>512</td><td>2</td><td>23.27</td><td>0.8336</td></tr>
           </tbody>
@@ -117,7 +117,7 @@
         <div class="bar-chart" aria-label="Patch-size ablation PSNR chart">
           <div style="--value:33"><span>128</span><strong>23.33</strong></div>
           <div style="--value:82"><span>256</span><strong>23.82</strong></div>
-          <div class="best" style="--value:86"><span>256 cont.</span><strong>23.86</strong></div>
+          <div class="best" style="--value:100"><span>256 official</span><strong>24.55</strong></div>
           <div style="--value:76"><span>256 polish</span><strong>23.76</strong></div>
           <div style="--value:27"><span>512</span><strong>23.27</strong></div>
         </div>
@@ -128,16 +128,16 @@
         <table>
           <thead><tr><th>Type</th><th>Avg. PSNR</th><th>Avg. SSIM</th></tr></thead>
           <tbody>
-            <tr><td>Clean</td><td>29.87</td><td>0.9125</td></tr>
-            <tr><td>Dust</td><td>21.90</td><td>0.8217</td></tr>
-            <tr><td>Finger</td><td>21.97</td><td>0.7897</td></tr>
-            <tr><td>Water</td><td>22.87</td><td>0.8433</td></tr>
-            <tr><td>Scratch</td><td>25.08</td><td>0.8505</td></tr>
-            <tr><td>Mixed</td><td>20.67</td><td>0.8311</td></tr>
+            <tr><td>Clean</td><td>30.47</td><td>0.9256</td></tr>
+            <tr><td>Dust</td><td>22.61</td><td>0.8312</td></tr>
+            <tr><td>Finger</td><td>23.51</td><td>0.8163</td></tr>
+            <tr><td>Water</td><td>23.22</td><td>0.8357</td></tr>
+            <tr><td>Scratch</td><td>25.28</td><td>0.8695</td></tr>
+            <tr><td>Mixed</td><td>22.19</td><td>0.8261</td></tr>
           </tbody>
         </table>
-        <div class="callout">Hard Dust: <strong>17.05 / 0.7086</strong><br>Hard Mixed: <strong>17.98 / 0.7900</strong></div>
-        <p>Continued training improved Hard difficulty from 20.33 to 20.59 dB, while Easy PSNR dropped from 27.00 to 26.66 dB. This suggests a cross-difficulty trade-off.</p>
+        <div class="callout">Hard Finger: <strong>18.09 / 0.6940</strong><br>Hard Mixed: <strong>18.82 / 0.8089</strong></div>
+        <p>The official test result is strongest on Clean and easiest splits. Hard Fingerprint, Mixed, and Water remain the main failure regions.</p>
       </article>
 
       <article class="block qualitative">
@@ -155,8 +155,8 @@
       <article class="block takeaway">
         <h2>8. Takeaways</h2>
         <div class="takeaway-grid">
-          <div><strong>Current best</strong><span>Epoch 73 reaches 23.86 dB / 0.8419 on the validation split.</span></div>
-          <div><strong>Trade-off observed</strong><span>Hard restoration improves, while Easy PSNR slightly decreases.</span></div>
+          <div><strong>Official result</strong><span>Epoch 73 reaches 24.55 dB / 0.8507 on the leaderboard test set.</span></div>
+          <div><strong>Model scale</strong><span>The submission reports 771 GMACs and 43.8M parameters.</span></div>
           <div><strong>Future direction</strong><span>Loss-metric mismatch and difficulty-aware training remain open issues.</span></div>
         </div>
       </article>
