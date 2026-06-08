@@ -18,3 +18,29 @@ python train_sidl.py \
 
 2. best checkpoint에서 512 512 로 fine tune
 
+
+
+
+공식 리더보드 테스트 셋으로 검증한 결과
+Name:
+
+Email: jcshin2003@naver.com
+
+Selected Dirty Type: Clean,Dust,Fingerprint,Mixed,Scratch,Water
+
+GMACs: 771
+
+Parameters: 43.8
+Results
+Difficulty	Clean
+PSNR/SSIM	Dust
+PSNR/SSIM	Fingerprint
+PSNR/SSIM	Water
+PSNR/SSIM	Scratch
+PSNR/SSIM	Mixed
+PSNR/SSIM
+easy	33.20 / 0.9603	25.10 / 0.8926	26.95 / 0.8994	26.45 / 0.8915	28.84 / 0.9123	27.56 / 0.8745
+medium	30.57 / 0.9132	22.53 / 0.7980	25.50 / 0.8554	23.73 / 0.8207	25.69 / 0.8620	20.18 / 0.7950
+hard	27.63 / 0.9033	20.21 / 0.8029	18.09 / 0.6940	19.47 / 0.7950	21.32 / 0.8341	18.82 / 0.8089
+Average	30.47 / 0.9256	22.61 / 0.8312	23.51 / 0.8163	23.22 / 0.8357	25.28 / 0.8695	22.19 / 0.8261
+
