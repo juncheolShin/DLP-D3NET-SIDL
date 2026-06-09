@@ -18,3 +18,11 @@ python train_sidl.py \
 
 2. best checkpoint에서 512 512 로 fine tune
 
+Params: 43,883,210
+Trainable params: 43,883,210
+
+512x512 input:
+Approx. GMACs: 771.2403
+
+256x256 input:
+Approx. GMACs: 122.1973
