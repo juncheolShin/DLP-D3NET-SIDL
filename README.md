@@ -1,53 +1,120 @@
-# D3Net Fine-Tuning for SIDL Dirty Lens Image Restoration
+# D3Net Adaptation for Dirty-Lens Smartphone Image Restoration
 
-본 프로젝트는 All-in-One Image Restoration 모델인 **D3Net (Dynamic Degradation Decomposition Network)** 을 **SIDL Smartphone Image Dirty Lens Dataset**에 fine-tuning하여, 실제 스마트폰 렌즈 오염으로 인해 발생한 이미지 열화를 복원하는 실험 프로젝트이다.
+This project adapts **D3Net (Dynamic Degradation Decomposition Network)** to the **SIDL Smartphone Images with Dirty Lenses** dataset. The goal is to study whether an all-in-one image restoration backbone can handle real smartphone lens contamination such as dust, fingerprints, scratches, water drops, and mixed residue.
 
-SIDL 데이터셋은 fingerprint, dust, scratch, water drop, mixed debris 등 실제 렌즈 오염으로 촬영된 degraded-clean image pair를 포함한다. 본 프로젝트에서는 D3Net의 degradation decomposition 구조가 dirty lens restoration 문제로 얼마나 잘 transfer되는지 확인하고, contamination type 및 difficulty별 성능을 PSNR/SSIM으로 분석한다.
+The project was developed for **Deep Learning Programming** as a controlled, limited-budget adaptation study. It focuses on model adaptation, patch-size ablation, validation breakdowns, and failure analysis rather than claiming state-of-the-art performance on SIDL.
 
-## 현재 구현 상태
+## Highlights
 
-- 원본 D3Net 코드 기반 유지
-- SIDL paired dataset 전용 dataloader 추가: `D3Net/utils/sidl_dataloader.py`
-- SIDL single-GPU fine-tuning script 추가: `D3Net/train_sidl.py`
-- validation에서 contamination type별, difficulty별 PSNR/SSIM 출력
-- checkpoint 및 학습 중간 복원 이미지 저장
+- Adapted the original D3Net codebase for paired SIDL dirty-lens restoration.
+- Added a SIDL-specific dataloader, single-GPU training script, validation breakdowns, and qualitative result generation.
+- Compared the adapted D3Net result against SIDL paper baselines including **AirNet** and **DiffUIR**.
+- Analyzed patch-size/refinement behavior across 128, 256, and 512 crop settings.
+- Submitted the epoch-73 checkpoint to the official SIDL leaderboard and reported test-set performance, GMACs, and parameter count.
 
-## 프로젝트 구조
+## Official Leaderboard Result
+
+The model submitted to the official SIDL leaderboard uses the epoch-73 checkpoint from continued 256x256 training.
+
+| Setting | Checkpoint | Test PSNR | Test SSIM |
+| --- | ---: | ---: | ---: |
+| 256x256 continued training | epoch 73 | **24.55 dB** | **0.8507** |
+| 256x256 main run | epoch 34 | 23.82 dB | 0.8398 |
+| 256x256 low-LR polishing | best observed | 23.76 dB | 0.8409 |
+| 512x512 refinement | best observed | 23.27 dB | 0.8336 |
+| 128x128 baseline | epoch 34 | 23.33 dB | 0.8357 |
+
+The leaderboard submission reports **771 GMACs** and **43.8M parameters**.
+
+## Key Findings
+
+- **256x256 crop training was the most stable setting.** It balanced spatial context, crop diversity, and batch stability better than 128 or 512 crop settings.
+- **512x512 refinement did not improve performance.** Although it provides more spatial context, it also reduces batch size to 1 and changes the crop distribution.
+- **Official test-set average is 24.55 dB / 0.8507.** This is the reported leaderboard result for the epoch-73 checkpoint.
+- **Hard cases remain difficult.** Official Hard average is 20.92 dB / 0.8064, while Easy average is 28.02 dB / 0.9051.
+- **Loss-metric mismatch remains a limitation.** Training uses L1 loss on normalized RGB tensors, while evaluation uses PSNR/SSIM on denormalized [0, 1] images.
+
+## Project Artifacts
+
+| Artifact | Path |
+| --- | --- |
+| Final report PDF | [`project_artifacts/report/DLP_SIDL_D3NET.pdf`](project_artifacts/report/DLP_SIDL_D3NET.pdf) |
+| Presentation slides PDF | [`project_artifacts/slides/D3Net-based Dirty Lens Image Restoration Slides.pdf`](project_artifacts/slides/D3Net-based%20Dirty%20Lens%20Image%20Restoration%20Slides.pdf) |
+| Poster PDF | [`project_artifacts/poster/D3Net-based Dirty Lens Image Restoration Poster.pdf`](project_artifacts/poster/D3Net-based%20Dirty%20Lens%20Image%20Restoration%20Poster.pdf) |
+| Experiment summary | [`D3Net/reports/sidl_experiment_summary.md`](D3Net/reports/sidl_experiment_summary.md) |
+| Validation breakdowns | [`D3Net/reports/validation_breakdowns/`](D3Net/reports/validation_breakdowns/) |
+| Qualitative assets | [`D3Net/reports/assets/`](D3Net/reports/assets/) |
+
+## Official Leaderboard Breakdown
+
+| Difficulty | Clean | Dust | Fingerprint | Water | Scratch | Mixed | Average |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Easy | 33.20 / 0.9603 | 25.10 / 0.8926 | 26.95 / 0.8994 | 26.45 / 0.8915 | 28.84 / 0.9123 | 27.56 / 0.8745 | 28.02 / 0.9051 |
+| Medium | 30.57 / 0.9132 | 22.53 / 0.7980 | 25.50 / 0.8554 | 23.73 / 0.8207 | 25.69 / 0.8620 | 20.18 / 0.7950 | 24.70 / 0.8407 |
+| Hard | 27.63 / 0.9033 | 20.21 / 0.8029 | 18.09 / 0.6940 | 19.47 / 0.7950 | 21.32 / 0.8341 | 18.82 / 0.8089 | 20.92 / 0.8064 |
+| Average | 30.47 / 0.9256 | 22.61 / 0.8312 | 23.51 / 0.8163 | 23.22 / 0.8357 | 25.28 / 0.8695 | 22.19 / 0.8261 | 24.55 / 0.8507 |
+
+## Repository Structure
 
 ```text
 DLP-D3NET-SIDL/
   README.md
-  project_overview.md
-  metadata.json
-  train_patch.tar
   D3Net/
     train_sidl.py
     test.py
-    train.py
-    requirements.txt
-    data/
-      SIDL/
-        train/
-        val/
-    ckpt/
-      sidl_finetune/
-    images/
-      sidl_training/
     models/
     utils/
+      sidl_dataloader.py
+    reports/
+      sidl_experiment_summary.md
+      validation_breakdowns/
+      assets/
+  project_artifacts/
+    report/
+      DLP_SIDL_D3NET.pdf
+      main.tex
+    slides/
+      index.html
+      style.css
+      D3Net-based Dirty Lens Image Restoration Slides.pdf
+    poster/
+      index.html
+      style.css
+      D3Net-based Dirty Lens Image Restoration Poster.pdf
 ```
 
-## 실행 환경
+## Dataset
 
-권장 환경은 원본 D3Net과 현재 `requirements.txt` 기준이다.
+This project uses the **SIDL Smartphone Images with Dirty Lenses** dataset.
 
-- OS: Linux 권장
-- Python: 3.8.x 권장
-- CUDA GPU 권장
-- PyTorch: 2.0.0 + CUDA 11.8
-- Torchvision: 0.15.1 + CUDA 11.8
+- Benchmark page: <https://sidl-benchmark.github.io/>
+- Data format: paired degraded-clean image restoration
+- Validation axes: contamination type and difficulty level
+- Contamination types: `clean`, `dust`, `finger`, `water`, `scratch`, `mixed`
+- Difficulty levels: `easy`, `medium`, `hard`
 
-환경 생성 예시는 다음과 같다.
+Expected local structure:
+
+```text
+D3Net/data/SIDL/
+  train/
+    dust/input, dust/target
+    finger/input, finger/target
+    scratch/input, scratch/target
+    water/input, water/target
+    mixed/input, mixed/target
+  val/
+    dust/easy/input, dust/easy/target
+    dust/medium/input, dust/medium/target
+    dust/hard/input, dust/hard/target
+    ...
+```
+
+Input and target filenames must match because this is paired restoration.
+
+## Environment
+
+The recommended environment follows the original D3Net setup.
 
 ```bash
 conda create -n d3net-sidl python=3.8 -y
@@ -56,75 +123,15 @@ cd D3Net
 pip install -r requirements.txt
 ```
 
-CUDA 버전에 따라 `torch`, `torchvision`, `torchaudio` 설치가 실패할 수 있다. 이 경우 현재 GPU/CUDA 환경에 맞는 PyTorch wheel을 먼저 설치한 뒤 `requirements.txt`를 설치한다.
+Recommended runtime:
 
-주의: `train_sidl.py`는 CUDA가 없으면 CPU도 선택할 수 있지만, 현재 `test.py`는 내부에서 `.cuda()`를 직접 호출하므로 GPU 환경에서 실행하는 것을 기준으로 한다.
+- Python 3.8
+- CUDA-capable GPU
+- PyTorch 2.0.0 with CUDA 11.8, or a PyTorch build compatible with your local CUDA version
 
-## 필요 데이터셋
+## Training
 
-필수 데이터셋은 **SIDL Smartphone Image Dirty Lens Dataset**이다.
-
-- Benchmark page: https://sidl-benchmark.github.io/
-- 사용 데이터: SIDL 512x512 patchified train/validation image pairs
-- 오염 유형: `finger`, `dust`, `scratch`, `water`, `mixed`
-- 검증 난이도: `easy`, `medium`, `hard`
-
-현재 프로젝트 루트에는 SIDL patch archive로 보이는 `train_patch.tar`와 `metadata.json`이 있으며, 학습 코드는 압축 해제 후 아래 구조를 사용한다.
-
-로컬 데이터에는 `clean`, `all` 폴더도 있을 수 있지만, 기본 학습 옵션은 `finger,dust,scratch,water,mixed`만 사용한다.
-
-```text
-D3Net/data/SIDL/
-  train/
-    finger/
-      input/
-      target/
-    dust/
-      input/
-      target/
-    scratch/
-      input/
-      target/
-    water/
-      input/
-      target/
-    mixed/
-      input/
-      target/
-  val/
-    finger/
-      easy/
-        input/
-        target/
-      medium/
-        input/
-        target/
-      hard/
-        input/
-        target/
-    dust/
-      easy|medium|hard/
-        input/
-        target/
-    scratch/
-      easy|medium|hard/
-        input/
-        target/
-    water/
-      easy|medium|hard/
-        input/
-        target/
-    mixed/
-      easy|medium|hard/
-        input/
-        target/
-```
-
-`input/`에는 dirty lens degraded image를, `target/`에는 같은 파일명을 가진 clean GT image를 둔다. Paired restoration이므로 input과 target 파일명이 반드시 일치해야 한다.
-
-## SIDL Fine-Tuning 실행
-
-아래 명령은 현재 프로젝트의 주 실행 경로이다.
+Main 256x256 SIDL training:
 
 ```bash
 cd D3Net
@@ -132,81 +139,56 @@ python train_sidl.py \
   --train_dir ./data/SIDL/train \
   --val_dir ./data/SIDL/val \
   --n_epochs 100 \
-  --batch_size 4 \
-  --img_size 128 \
+  --batch_size 8 \
+  --img_size 256 \
   --val_img_size 512 \
   --val_batch_size 1 \
   --lr 0.0001 \
-  --model_folder ./ckpt/sidl_finetune
+  --model_folder ./ckpt/sidl_scratch_4090_crop256
 ```
 
-GPU 메모리가 부족하면 먼저 아래 옵션을 줄인다.
-
-- `--batch_size`
-- `--val_batch_size`
-- `--img_size`
-- `--val_img_size`
-
-특정 오염 유형만 학습하려면 `--types`를 사용한다.
+Resume continued training:
 
 ```bash
 python train_sidl.py \
   --train_dir ./data/SIDL/train \
   --val_dir ./data/SIDL/val \
-  --types finger,dust,scratch \
-  --n_epochs 50 \
-  --batch_size 4 \
-  --model_folder ./ckpt/sidl_finetune_subset
-```
-
-## Pretrained / Resume
-
-원본 D3Net 또는 이전 실험 checkpoint에서 transfer learning을 시작하려면 `--pretrained`를 사용한다.
-
-```bash
-python train_sidl.py \
-  --train_dir ./data/SIDL/train \
-  --val_dir ./data/SIDL/val \
-  --pretrained ./ckpt/pretrained/generator.pth \
-  --model_folder ./ckpt/sidl_finetune
-```
-
-중단된 학습을 이어서 실행하려면 `--epoch`를 지정한다. 지정한 epoch checkpoint가 없으면 `generator_latest.pth`를 사용한다.
-
-```bash
-python train_sidl.py \
-  --train_dir ./data/SIDL/train \
-  --val_dir ./data/SIDL/val \
-  --epoch 50 \
+  --epoch 64 \
   --n_epochs 100 \
-  --model_folder ./ckpt/sidl_finetune
+  --batch_size 8 \
+  --img_size 256 \
+  --val_img_size 512 \
+  --val_batch_size 1 \
+  --lr 0.0001 \
+  --model_folder ./ckpt/sidl_scratch_4090_crop256
 ```
 
-## 평가 및 결과 확인
+512 refinement from a 256 checkpoint:
 
-`train_sidl.py`는 `--val_interval`마다 validation을 실행하고, 아래 항목을 출력한다.
+```bash
+python train_sidl.py \
+  --train_dir ./data/SIDL/train \
+  --val_dir ./data/SIDL/val \
+  --pretrained ./ckpt/sidl_scratch_4090_crop256/generator_best.pth \
+  --n_epochs 20 \
+  --batch_size 1 \
+  --img_size 512 \
+  --val_img_size 512 \
+  --lr 0.00001 \
+  --model_folder ./ckpt/sidl_refine512_from256best_lr1e5
+```
 
-- 전체 평균 PSNR / SSIM
-- contamination type별 PSNR / SSIM
-- `easy`, `medium`, `hard` difficulty별 PSNR / SSIM
+## Evaluation
 
-checkpoint는 다음 위치에 저장된다.
+During validation, D3Net predicts a residual correction:
 
 ```text
-D3Net/ckpt/sidl_finetune/
-  generator_best.pth
-  generator_latest.pth
+restored image = input image + D3Net(input image)
 ```
 
-학습 중간 샘플 이미지는 다음 위치에 저장된다. 한 이미지 안에 input, restored output, target이 나란히 저장되어 정성 평가에 사용할 수 있다.
+The restored image and target are denormalized using ImageNet mean/std, clamped to `[0, 1]`, and evaluated with PSNR/SSIM. Metrics are aggregated by contamination type and difficulty level.
 
-```text
-D3Net/images/sidl_training/
-```
-
-## Test Script 사용
-
-`D3Net/test.py`는 지정한 input directory의 이미지를 복원하고, 같은 파일명을 가진 GT directory와 비교해 PSNR/SSIM을 계산한다. 현재 스크립트는 `--target_data_dir` 이미지를 직접 열기 때문에 GT directory가 필요하다.
+Example test command:
 
 ```bash
 cd D3Net
@@ -215,71 +197,29 @@ python test.py \
   --target_data_dir ./data/SIDL/val/finger/easy/target \
   --save_path ./images/test_finger_easy \
   --epoch best \
-  --model_folder ./ckpt/sidl_finetune \
+  --model_folder ./ckpt/sidl_scratch_4090_crop256 \
   --img_width 512 \
   --img_height 512
 ```
 
-주의: 현재 `test.py`는 checkpoint 파일명을 `generator_{epoch}.pth` 형식으로 찾는다. 따라서 `--epoch best`는 `generator_best.pth`, `--epoch latest`는 `generator_latest.pth`를 사용한다.
+## Limitations
 
-```bash
-python test.py \
-  --image_path ./data/SIDL/val/finger/easy/input \
-  --target_data_dir ./data/SIDL/val/finger/easy/target \
-  --save_path ./images/test_finger_easy_latest \
-  --epoch latest \
-  --model_folder ./ckpt/sidl_finetune \
-  --img_width 512 \
-  --img_height 512
-```
+- The original D3Net training scale is much larger, roughly 1200 epochs. This project's submitted checkpoint is epoch 73, so results should be interpreted as limited-budget adaptation.
+- AirNet and DiffUIR values come from the SIDL paper table. D3Net values here are from the official leaderboard submission unless explicitly marked as internal validation results.
+- The training objective and evaluation metric are not perfectly aligned: L1 loss is computed on normalized tensors, while PSNR/SSIM are computed on denormalized images.
+- Checkpoints and dataset files may be excluded from a public repository due to file size and dataset distribution constraints.
 
-복원 결과 concat 이미지는 다음 형식의 경로에 저장된다.
+## Future Work
 
-```text
-{save_path}_concat/
-```
-
-## 주요 옵션
-
-| 옵션 | 기본값 | 설명 |
-| --- | --- | --- |
-| `--train_dir` | `./data/SIDL/train` | SIDL train directory |
-| `--val_dir` | `./data/SIDL/val` | SIDL validation directory |
-| `--n_epochs` | `100` | 총 학습 epoch |
-| `--batch_size` | `4` | train batch size |
-| `--img_size` | `128` | train random crop size |
-| `--val_img_size` | `512` | validation center crop size |
-| `--val_batch_size` | `1` | validation batch size |
-| `--lr` | `1e-4` | Adam learning rate |
-| `--types` | `finger,dust,scratch,water,mixed` | 사용할 오염 유형 |
-| `--model_folder` | `./ckpt/sidl_finetune` | checkpoint 저장 위치 |
-| `--val_interval` | `5` | validation 실행 주기 |
-| `--checkpoint_interval` | `5` | latest checkpoint 저장 주기 |
-| `--patience` | `20` | validation PSNR 기준 early stopping patience |
-
-## 결과 정리 시 포함할 항목
-
-보고서나 발표 자료에는 다음 항목을 정리하면 된다.
-
-- validation 전체 평균 PSNR / SSIM
-- contamination type별 PSNR / SSIM
-- difficulty별 PSNR / SSIM
-- input / restored / target 비교 이미지
-- zero-shot D3Net과 SIDL fine-tuning D3Net 비교
-- 실패 사례: scratch, water drop, mixed debris 등 어려운 유형의 시각적 artifact
-
-## README 업데이트 원칙
-
-앞으로 코드나 실험 설정을 바꾸면 README도 함께 갱신한다.
-
-- 실행 명령이 바뀌면 `SIDL Fine-Tuning 실행`과 `Test Script 사용` 섹션 수정
-- dataloader 구조가 바뀌면 `필요 데이터셋` 섹션 수정
-- checkpoint, sample image, metric 저장 방식이 바뀌면 `평가 및 결과 확인` 섹션 수정
-- 새 loss, pretrained model, ablation이 추가되면 `현재 구현 상태`와 `결과 정리 시 포함할 항목`에 반영
+- Longer training or pretrained D3Net initialization
+- 512 crop curriculum instead of direct 512 refinement
+- Charbonnier loss, L1 + small MSE hybrid loss, or denormalized-space MSE polishing
+- Difficulty-aware sampling or weighting
+- Frequency-aware and edge-aware losses
+- Controlled comparison against AirNet and DiffUIR under the same split and compute budget
 
 ## References
 
-- SIDL Benchmark: https://sidl-benchmark.github.io/
-- D3Net Repository: https://github.com/codeshop715/D3Net
-- D3Net Paper: https://arxiv.org/html/2502.19068v1
-- All-in-One Image Restoration Survey: https://github.com/Harbinzzy/All-in-One-Image-Restoration-Survey
+- SIDL Benchmark: <https://sidl-benchmark.github.io/>
+- D3Net Repository: <https://github.com/codeshop715/D3Net>
+- D3Net Paper: <https://arxiv.org/html/2502.19068v1>

@@ -1,0 +1,47 @@
+\begin{table}[H]
+\centering
+\caption{SIDL paper-style baseline comparison. AirNet and DiffUIR values are from the SIDL paper test-set table, while D3Net values are from our official leaderboard submission using the epoch-73 checkpoint from continued 256 crop training.}
+\label{tab:sidl_airnet_diffuir}
+\tiny
+\setlength{\tabcolsep}{2.4pt}
+\renewcommand{\arraystretch}{0.96}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lllcccccc|c}
+\toprule
+\textbf{Method} & \textbf{Network} & &
+\textbf{Clean} &
+\textbf{Dust} &
+\textbf{Fingerprint} &
+\textbf{Water} &
+\textbf{Scratch} &
+\textbf{Mixed} &
+\textbf{Average} \\
+& & &
+PSNR/SSIM &
+PSNR/SSIM &
+PSNR/SSIM &
+PSNR/SSIM &
+PSNR/SSIM &
+PSNR/SSIM &
+PSNR/SSIM \\
+\midrule
+\multirow{3}{*}{CNN}
+& \multirow{3}{*}{AirNet\textsuperscript{\dag}}
+& Easy   & 27.10 / 0.9329 & 23.40 / 0.8669 & 25.10 / 0.8708 & 24.85 / 0.8658 & 25.84 / 0.8917 & 25.30 / 0.8422 & 25.26 / 0.8784 \\
+& & Medium & 26.13 / 0.8899 & 19.69 / 0.7577 & 22.53 / 0.8191 & 20.36 / 0.7656 & 21.24 / 0.8051 & 16.79 / 0.7542 & 21.12 / 0.7986 \\
+& & Hard   & 23.79 / 0.8527 & 16.18 / 0.7350 & 15.83 / 0.6432 & 16.64 / 0.7449 & 18.13 / 0.7975 & 14.48 / 0.7047 & 17.50 / 0.7463 \\
+\midrule
+\multirow{3}{*}{Diffusion}
+& \multirow{3}{*}{DiffUIR\textsuperscript{\dag}}
+& Easy   & 34.51 / 0.9785 & 26.96 / 0.9276 & 28.82 / 0.9331 & 27.42 / 0.9220 & 30.14 / 0.9375 & 28.22 / 0.9021 & 29.34 / 0.9335 \\
+& & Medium & 33.25 / 0.9375 & 22.11 / 0.8325 & 26.16 / 0.8856 & 24.65 / 0.8647 & 27.07 / 0.9105 & 20.32 / 0.8368 & 25.36 / 0.8786 \\
+& & Hard   & 29.47 / 0.9366 & 20.38 / 0.8602 & 18.93 / 0.7763 & 19.91 / 0.8500 & 21.27 / 0.8599 & 18.97 / 0.8409 & 21.71 / 0.8533 \\
+\midrule
+\multirow{3}{*}{Ours}
+& \multirow{3}{*}{D3Net}
+& Easy   & 33.20 / 0.9603 & 25.10 / 0.8926 & 26.95 / 0.8994 & 26.45 / 0.8915 & 28.84 / 0.9123 & 27.56 / 0.8745 & 28.02 / 0.9051 \\
+& & Medium & 30.57 / 0.9132 & 22.53 / 0.7980 & 25.50 / 0.8554 & 23.73 / 0.8207 & 25.69 / 0.8620 & 20.18 / 0.7950 & 24.70 / 0.8407 \\
+& & Hard   & 27.63 / 0.9033 & 20.21 / 0.8029 & 18.09 / 0.6940 & 19.47 / 0.7950 & 21.32 / 0.8341 & 18.82 / 0.8089 & 20.92 / 0.8064 \\
+\bottomrule
+\end{tabular}}
+\end{table}

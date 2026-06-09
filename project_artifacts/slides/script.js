@@ -2,6 +2,14 @@ const slides = Array.from(document.querySelectorAll(".slide"));
 const counter = document.querySelector(".counter");
 let index = 0;
 
+function getInitialSlideIndex() {
+  const match = window.location.hash.match(/slide=(\d+)/);
+  if (!match) {
+    return 0;
+  }
+  return Number(match[1]) - 1;
+}
+
 function showSlide(nextIndex) {
   index = Math.max(0, Math.min(slides.length - 1, nextIndex));
   slides.forEach((slide, i) => {
@@ -29,4 +37,4 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-showSlide(0);
+showSlide(getInitialSlideIndex());

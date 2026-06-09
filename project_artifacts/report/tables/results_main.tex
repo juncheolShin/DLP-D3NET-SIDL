@@ -1,53 +1,74 @@
 \begin{table}[H]
 \centering
-\caption{Validation summary of D3Net SIDL experiments. 확인되지 않은 추가 결과는 포함하지 않았다.}
+\caption{Validation summary of D3Net SIDL experiments.}
 \label{tab:main}
 \small
-\begin{tabularx}{\linewidth}{l c c c c X}
+\begin{tabular}{l c c c c c}
 \toprule
-Run & Train crop & Best epoch & PSNR & SSIM & Notes \\
+Run & Init. & Train crop & Best epoch & PSNR & SSIM \\
 \midrule
-128 crop baseline & 128 & 34 & 23.33 & 0.8357 & 초기 exploratory baseline; incremental task/data addition으로 완전 통제 실험은 아님 \\
-256 crop main & 256 & 34 & \textbf{23.82} & 0.8398 & fixed final dataset에서 수행한 main controlled run \\
-256 low-LR polishing & 256 & 3 & 23.76 & \textbf{0.8409} & 256 best에서 LR $1\times10^{-5}$로 fine-tuning; PSNR은 main run 미달 \\
-512 refinement & 512 & 2 & 23.27 & 0.8336 & 256 best에서 LR $1\times10^{-5}$, batch size 1로 refinement; negative result \\
+128 crop baseline & scratch & 128 & 34 & 23.33 & 0.8357 \\
+256 crop main & scratch & 256 & 34 & 23.82 & 0.8398 \\
+256 continued, official test & latest & 256 & 73 & \textbf{24.55} & \textbf{0.8507} \\
+256 low-LR polishing & 256 best & 256 & 3 & 23.76 & 0.8409 \\
+512 refinement & 256 best & 512 & 2 & 23.27 & 0.8336 \\
 \bottomrule
-\end{tabularx}
+\end{tabular}
 \end{table}
+\vspace{-0.6em}
 
 \begin{table}[H]
 \centering
-\caption{256 crop main run의 difficulty-wise validation breakdown.}
+\caption{Difficulty-wise official leaderboard breakdown of the epoch-73 256 continued checkpoint.}
 \label{tab:difficulty}
 \small
 \begin{tabular}{lcc}
 \toprule
 Difficulty & PSNR (dB) & SSIM \\
 \midrule
-Easy & 27.00 & 0.8812 \\
-Medium & 25.36 & 0.8862 \\
-Hard & 20.33 & 0.7743 \\
+Easy & 28.02 & 0.9051 \\
+Medium & 24.70 & 0.8407 \\
+Hard & 20.92 & 0.8064 \\
 \midrule
-Overall & \textbf{23.82} & \textbf{0.8398} \\
+Overall & \textbf{24.55} & \textbf{0.8507} \\
 \bottomrule
 \end{tabular}
 \end{table}
+\vspace{-0.6em}
 
 \begin{table}[H]
 \centering
-\caption{256 crop main run의 contamination type-wise validation average.}
+\caption{Contamination type-wise official leaderboard average of the epoch-73 256 continued checkpoint.}
 \label{tab:type}
 \small
 \begin{tabular}{lcc}
 \toprule
 Type & PSNR (dB) & SSIM \\
 \midrule
-Clean & 29.93 & 0.9113 \\
-Dust & 21.89 & 0.8203 \\
-Finger & 21.80 & 0.7858 \\
-Mixed & 20.48 & 0.8269 \\
-Scratch & 25.07 & 0.8488 \\
-Water & 22.93 & 0.8423 \\
+Clean & 30.47 & 0.9256 \\
+Dust & 22.61 & 0.8312 \\
+Finger & 23.51 & 0.8163 \\
+Water & 23.22 & 0.8357 \\
+Scratch & 25.28 & 0.8695 \\
+Mixed & 22.19 & 0.8261 \\
 \bottomrule
 \end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Official leaderboard test-set breakdown of the epoch-73 checkpoint.}
+\label{tab:official_leaderboard}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccccc}
+\toprule
+Difficulty & Clean & Dust & Fingerprint & Water & Scratch & Mixed & Average \\
+\midrule
+Easy & 33.20 / 0.9603 & 25.10 / 0.8926 & 26.95 / 0.8994 & 26.45 / 0.8915 & 28.84 / 0.9123 & 27.56 / 0.8745 & 28.02 / 0.9051 \\
+Medium & 30.57 / 0.9132 & 22.53 / 0.7980 & 25.50 / 0.8554 & 23.73 / 0.8207 & 25.69 / 0.8620 & 20.18 / 0.7950 & 24.70 / 0.8407 \\
+Hard & 27.63 / 0.9033 & 20.21 / 0.8029 & 18.09 / 0.6940 & 19.47 / 0.7950 & 21.32 / 0.8341 & 18.82 / 0.8089 & 20.92 / 0.8064 \\
+Average & 30.47 / 0.9256 & 22.61 / 0.8312 & 23.51 / 0.8163 & 23.22 / 0.8357 & 25.28 / 0.8695 & 22.19 / 0.8261 & \textbf{24.55 / 0.8507} \\
+\bottomrule
+\end{tabular}}
 \end{table}

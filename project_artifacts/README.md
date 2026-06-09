@@ -59,7 +59,7 @@
 
 ## TODO
 
-- `TODO: Name`, `TODO: Course / Affiliation`을 실제 이름과 과목명으로 교체.
+- 작성자/과목 표기는 `20223081 신준철`, `Deep Learning Programming`으로 설정 완료.
 - 보고서의 model parameter 수와 GMAC 측정값이 필요하면 별도 측정 후 `Experimental Setup`에 추가.
 - 256 low-LR polishing이나 추가 refinement run의 최종값이 새로 확정되면 표를 업데이트.
 - qualitative example을 더 엄선하려면 Hard Dust / Hard Mixed failure case를 추가 생성.

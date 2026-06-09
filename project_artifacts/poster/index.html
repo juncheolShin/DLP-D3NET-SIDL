@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,182 +10,157 @@
   <main class="poster">
     <header class="poster-header">
       <div>
-        <p class="venue">SIDL Dirty Lens Image Restoration Final Project</p>
+        <p class="venue">Deep Learning Programming Final Project</p>
         <h1>D3Net-based All-in-One Restoration for Smartphone Images with Dirty Lenses</h1>
-        <p class="subtitle">Patch-size ablation and failure analysis on SIDL dirty lens restoration</p>
+        <p class="subtitle">SIDL adaptation, paper-baseline comparison, patch-size ablation, and failure analysis</p>
       </div>
       <div class="author-box">
-        <strong>TODO: Name</strong>
-        <span>TODO: Course / Affiliation</span>
+        <strong>20223081 신준철</strong>
+        <span>Deep Learning Programming</span>
       </div>
     </header>
 
     <section class="hero-strip">
       <div>
         <span class="kicker">Main result</span>
-        <strong>23.82 dB / 0.8398</strong>
-        <small>Best validation at epoch 34 with 256×256 crop training</small>
+        <strong>24.55 dB / 0.8507</strong>
+        <small>Official leaderboard test result: 256 crop, epoch 73</small>
+      </div>
+      <div>
+        <span class="kicker">Comparison scope</span>
+        <strong>AirNet / DiffUIR / D3Net</strong>
+        <small>SIDL paper test results vs. our official submission</small>
       </div>
       <div>
         <span class="kicker">Best setting</span>
         <strong>256×256 crop</strong>
-        <small>Balanced spatial context, augmentation, and optimization stability</small>
+        <small>Submitted checkpoint: epoch 73, 771 GMACs, 43.8M params</small>
       </div>
       <div>
-        <span class="kicker">Negative result</span>
-        <strong>512 refinement ↓</strong>
-        <small>23.27 dB after low-LR refinement from 256 best</small>
-      </div>
-      <div>
-        <span class="kicker">Bottleneck</span>
+        <span class="kicker">Main bottleneck</span>
         <strong>Hard Dust / Mixed</strong>
-        <small>Severe contamination remains the dominant failure mode</small>
+        <small>Hard Fingerprint, Mixed, and Water remain difficult</small>
       </div>
     </section>
 
-    <div class="columns poster-grid">
-      <section class="column">
-        <article class="block">
-          <h2>Motivation</h2>
-          <ul>
-            <li>Smartphone lenses are easily contaminated by dust, fingerprint, scratch, water, and mixed residue.</li>
-            <li>Dirty lens degradation creates both spatial artifacts and frequency-domain distortion.</li>
-            <li>The core question is whether a degradation-adaptive all-in-one model can handle SIDL restoration.</li>
-          </ul>
-        </article>
+    <section class="flow-grid">
+      <article class="block problem">
+        <h2>1. Problem & Dataset</h2>
+        <p>SIDL is a real-world paired dataset for restoring smartphone images captured through contaminated lenses. The task is different from ordinary denoising or deblurring because lens contamination produces both local artifacts and global contrast degradation.</p>
+        <div class="tag-grid">
+          <span>clean</span><span>dust</span><span>finger</span>
+          <span>water</span><span>scratch</span><span>mixed</span>
+        </div>
+        <dl class="setup-list compact">
+          <dt>Data</dt><dd>512×512 patchified degraded-clean pairs</dd>
+          <dt>Validation</dt><dd>Type × difficulty split, PSNR / SSIM</dd>
+          <dt>Goal</dt><dd>Analyze D3Net adaptation, not claim SIDL SOTA</dd>
+        </dl>
+      </article>
 
-        <article class="block">
-          <h2>SIDL Dirty Lens Restoration Task</h2>
-          <p>SIDL is a real-world paired dataset for restoring smartphone images captured through contaminated lenses. This project uses 512×512 patchified image pairs and evaluates PSNR/SSIM by contamination type and difficulty.</p>
-          <div class="tag-grid">
-            <span>clean</span>
-            <span>dust</span>
-            <span>finger</span>
-            <span>mixed</span>
-            <span>scratch</span>
-            <span>water</span>
-          </div>
-          <table>
-            <thead>
-              <tr><th>Difficulty</th><th>PSNR</th><th>SSIM</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Easy</td><td><strong>27.00</strong></td><td>0.8812</td></tr>
-              <tr><td>Medium</td><td><strong>25.36</strong></td><td>0.8862</td></tr>
-              <tr><td>Hard</td><td><strong>20.33</strong></td><td>0.7743</td></tr>
-            </tbody>
-          </table>
-        </article>
+      <article class="block method">
+        <h2>2. Method: D3Net Adaptation</h2>
+        <div class="method-figures">
+          <img src="assets/d3net_architecture_paper_cropped.png" alt="D3Net architecture from the original paper">
+          <img src="assets/d3net_ddm_paper_cropped.png" alt="Dynamic decomposition mechanism from the D3Net paper">
+        </div>
+        <p>D3Net predicts a residual correction: restored image = input + residual. Frequency-domain cues and dynamic decomposition blocks allow degradation-aware processing for mixed and local contamination patterns.</p>
+      </article>
 
-        <article class="block">
-          <h2>Experimental Setup</h2>
-          <dl class="setup-list">
-            <dt>Model</dt><dd>D3Net, scratch training</dd>
-            <dt>Train data</dt><dd>SIDL patchified degraded-clean pairs</dd>
-            <dt>Validation</dt><dd>512×512 image pairs, PSNR / SSIM</dd>
-            <dt>Main crop</dt><dd>256×256 random crop</dd>
-            <dt>Hardware</dt><dd>RTX 4090</dd>
-            <dt>Limit</dt><dd>Limited class-project compute budget</dd>
-          </dl>
-        </article>
-      </section>
+      <article class="block setup">
+        <h2>3. Experimental Setup</h2>
+        <dl class="setup-list">
+          <dt>Model</dt><dd>D3Net, scratch training, 12 ADB blocks</dd>
+          <dt>Main run</dt><dd>256×256 random crop, batch 8, LR 1e-4</dd>
+          <dt>Submit</dt><dd>Epoch 73, 771 GMACs, 43.8M params</dd>
+          <dt>Loss / Opt.</dt><dd>L1 loss, Adam β=(0.9, 0.999), cosine LR</dd>
+          <dt>Validation</dt><dd>512×512 center crop, image-wise PSNR / SSIM</dd>
+          <dt>Scope</dt><dd>Limited-budget adaptation, not SIDL SOTA claim</dd>
+        </dl>
+      </article>
 
-      <section class="column">
-        <article class="block figure-block">
-          <h2>D3Net Architecture</h2>
-          <img src="assets/d3net_architecture_paper.png" alt="D3Net architecture from the original paper">
-          <p class="caption">Original D3Net architecture figure from Wang et al., arXiv:2502.19068: restoration reconstruction branch + degradation decomposition branch with CDDA prompts.</p>
-        </article>
+      <article class="block baseline">
+        <h2>4. SIDL Paper Baseline Comparison</h2>
+        <p class="small-note">AirNet and DiffUIR are SIDL paper test-set values. D3Net is our official leaderboard submission using the epoch-73 checkpoint.</p>
+        <table class="comparison-table">
+          <thead>
+            <tr><th>Method</th><th>Level</th><th>Clean</th><th>Dust</th><th>Finger</th><th>Water</th><th>Scratch</th><th>Mixed</th><th>Avg.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="method-cell" rowspan="3">AirNet</td><td class="level-cell">Easy</td><td>27.10/0.9329</td><td>23.40/0.8669</td><td>25.10/0.8708</td><td>24.85/0.8658</td><td>25.84/0.8917</td><td>25.30/0.8422</td><td>25.26/0.8784</td></tr>
+            <tr><td class="level-cell">Medium</td><td>26.13/0.8899</td><td>19.69/0.7577</td><td>22.53/0.8191</td><td>20.36/0.7656</td><td>21.24/0.8051</td><td>16.79/0.7542</td><td>21.12/0.7986</td></tr>
+            <tr><td class="level-cell">Hard</td><td>23.79/0.8527</td><td>16.18/0.7350</td><td>15.83/0.6432</td><td>16.64/0.7449</td><td>18.13/0.7975</td><td>14.48/0.7047</td><td>17.50/0.7463</td></tr>
+            <tr><td class="method-cell" rowspan="3">DiffUIR</td><td class="level-cell">Easy</td><td>34.51/0.9785</td><td>26.96/0.9276</td><td>28.82/0.9331</td><td>27.42/0.9220</td><td>30.14/0.9375</td><td>28.22/0.9021</td><td>29.34/0.9335</td></tr>
+            <tr><td class="level-cell">Medium</td><td>33.25/0.9375</td><td>22.11/0.8325</td><td>26.16/0.8856</td><td>24.65/0.8647</td><td>27.07/0.9105</td><td>20.32/0.8368</td><td>25.36/0.8786</td></tr>
+            <tr><td class="level-cell">Hard</td><td>29.47/0.9366</td><td>20.38/0.8602</td><td>18.93/0.7763</td><td>19.91/0.8500</td><td>21.27/0.8599</td><td>18.97/0.8409</td><td>21.71/0.8533</td></tr>
+            <tr class="highlight-row"><td class="method-cell" rowspan="3">D3Net ours</td><td class="level-cell">Easy</td><td>33.20/0.9603</td><td>25.10/0.8926</td><td>26.95/0.8994</td><td>26.45/0.8915</td><td>28.84/0.9123</td><td>27.56/0.8745</td><td>28.02/0.9051</td></tr>
+            <tr class="highlight-row"><td class="level-cell">Medium</td><td>30.57/0.9132</td><td>22.53/0.7980</td><td>25.50/0.8554</td><td>23.73/0.8207</td><td>25.69/0.8620</td><td>20.18/0.7950</td><td>24.70/0.8407</td></tr>
+            <tr class="highlight-row"><td class="level-cell">Hard</td><td>27.63/0.9033</td><td>20.21/0.8029</td><td>18.09/0.6940</td><td>19.47/0.7950</td><td>21.32/0.8341</td><td>18.82/0.8089</td><td>20.92/0.8064</td></tr>
+          </tbody>
+        </table>
+      </article>
 
-        <article class="block figure-block compact-figure">
-          <h2>Dynamic Degradation Decomposition</h2>
-          <img src="assets/d3net_ddm_paper.png" alt="Dynamic decomposition mechanism from the D3Net paper">
-          <p class="caption">Original D3Net DDM figure from Wang et al., arXiv:2502.19068. Decision Units decide whether Adaptive Decomposition Blocks should process degradation-aware features.</p>
-        </article>
+      <article class="block ablation">
+        <h2>5. Our Ablation</h2>
+        <table>
+          <thead>
+            <tr><th>Run</th><th>Init.</th><th>Crop</th><th>Epoch</th><th>PSNR</th><th>SSIM</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>128 baseline</td><td>scratch</td><td>128</td><td>34</td><td>23.33</td><td>0.8357</td></tr>
+            <tr><td>256 main</td><td>scratch</td><td>256</td><td>34</td><td>23.82</td><td>0.8398</td></tr>
+            <tr class="highlight-row"><td>256 official</td><td>latest</td><td>256</td><td>73</td><td><strong>24.55</strong></td><td><strong>0.8507</strong></td></tr>
+            <tr><td>256 low-LR</td><td>256 best</td><td>256</td><td>3</td><td>23.76</td><td>0.8409</td></tr>
+            <tr><td>512 refinement</td><td>256 best</td><td>512</td><td>2</td><td>23.27</td><td>0.8336</td></tr>
+          </tbody>
+        </table>
+        <div class="bar-chart" aria-label="Patch-size ablation PSNR chart">
+          <div style="--value:33"><span>128</span><strong>23.33</strong></div>
+          <div style="--value:82"><span>256</span><strong>23.82</strong></div>
+          <div class="best" style="--value:100"><span>256 official</span><strong>24.55</strong></div>
+          <div style="--value:76"><span>256 polish</span><strong>23.76</strong></div>
+          <div style="--value:27"><span>512</span><strong>23.27</strong></div>
+        </div>
+      </article>
 
-      </section>
+      <article class="block analysis">
+        <h2>6. Failure Analysis</h2>
+        <table>
+          <thead><tr><th>Type</th><th>Avg. PSNR</th><th>Avg. SSIM</th></tr></thead>
+          <tbody>
+            <tr><td>Clean</td><td>30.47</td><td>0.9256</td></tr>
+            <tr><td>Dust</td><td>22.61</td><td>0.8312</td></tr>
+            <tr><td>Finger</td><td>23.51</td><td>0.8163</td></tr>
+            <tr><td>Water</td><td>23.22</td><td>0.8357</td></tr>
+            <tr><td>Scratch</td><td>25.28</td><td>0.8695</td></tr>
+            <tr><td>Mixed</td><td>22.19</td><td>0.8261</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">Hard Finger: <strong>18.09 / 0.6940</strong><br>Hard Mixed: <strong>18.82 / 0.8089</strong></div>
+        <p>The official test result is strongest on Clean and easiest splits. Hard Fingerprint, Mixed, and Water remain the main failure regions.</p>
+      </article>
 
-      <section class="column">
-        <article class="block">
-          <h2>Main Results</h2>
-          <table>
-            <thead>
-              <tr><th>Run</th><th>PSNR</th><th>SSIM</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>128 baseline</td><td>23.33</td><td>0.8357</td></tr>
-              <tr class="highlight-row"><td>256 main</td><td><strong>23.82</strong></td><td>0.8398</td></tr>
-              <tr><td>256 low-LR</td><td>23.76</td><td><strong>0.8409</strong></td></tr>
-              <tr><td>512 refinement</td><td>23.27</td><td>0.8336</td></tr>
-            </tbody>
-          </table>
-        </article>
+      <article class="block qualitative">
+        <h2>7. Qualitative Results</h2>
+        <p>Each panel shows input, D3Net output, and GT from the report assets.</p>
+        <div class="qualitative-grid">
+          <img src="../../D3Net/reports/assets/example_1_finger_hard_clean.png" alt="Finger hard qualitative comparison">
+          <img src="../../D3Net/reports/assets/example_2_dust_medium_clean.png" alt="Dust medium qualitative comparison">
+          <img src="../../D3Net/reports/assets/example_3_scratch_hard_clean.png" alt="Scratch hard qualitative comparison">
+          <img src="../../D3Net/reports/assets/example_4_water_hard_clean.png" alt="Water hard qualitative comparison">
+          <img src="../../D3Net/reports/assets/example_5_mixed_medium_clean.png" alt="Mixed medium qualitative comparison">
+        </div>
+      </article>
 
-        <article class="block">
-          <h2>Patch-size Ablation</h2>
-          <div class="bar-chart" aria-label="Patch-size ablation PSNR chart">
-            <div style="--value:33"><span>128</span><strong>23.33</strong></div>
-            <div class="best" style="--value:82"><span>256</span><strong>23.82</strong></div>
-            <div style="--value:76"><span>256 polish</span><strong>23.76</strong></div>
-            <div style="--value:27"><span>512</span><strong>23.27</strong></div>
-          </div>
-          <p>256 crop improves over 128 by adding spatial context, while 512 refinement drops despite larger context.</p>
-        </article>
-
-        <article class="block comparison">
-          <h2>All-in-One Model Context</h2>
-          <p>D3Net paper reports a five-task all-in-one benchmark. This is not a direct SIDL comparison, but it motivates using D3Net as a degradation-adaptive baseline.</p>
-          <table>
-            <thead>
-              <tr><th>Method</th><th>Avg. PSNR</th><th>Params</th><th>FLOPs</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>AirNet</td><td>25.49</td><td>8.93M</td><td>75.32G</td></tr>
-              <tr><td>PromptIR</td><td>27.57</td><td>32.97M</td><td>370.64G</td></tr>
-              <tr><td>IDR</td><td>28.34</td><td>15.34M</td><td>-</td></tr>
-              <tr><td>InstructIR</td><td>29.55</td><td>15.84M</td><td>37.95G</td></tr>
-              <tr class="highlight-row"><td>D3Net</td><td><strong>32.36</strong></td><td>37.80M</td><td>33.67G</td></tr>
-            </tbody>
-          </table>
-        </article>
-      </section>
-
-      <section class="column">
-        <article class="block">
-          <h2>Difficulty & Contamination Analysis</h2>
-          <table>
-            <thead>
-              <tr><th>Type</th><th>Average PSNR</th><th>Average SSIM</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Clean</td><td>29.93</td><td>0.9113</td></tr>
-              <tr><td>Dust</td><td>21.89</td><td>0.8203</td></tr>
-              <tr><td>Finger</td><td>21.80</td><td>0.7858</td></tr>
-              <tr><td>Mixed</td><td>20.48</td><td>0.8269</td></tr>
-              <tr><td>Scratch</td><td>25.07</td><td>0.8488</td></tr>
-              <tr><td>Water</td><td>22.93</td><td>0.8423</td></tr>
-            </tbody>
-          </table>
-          <div class="callout">Hard Dust: <strong>16.86 / 0.7065</strong><br>Hard Mixed: <strong>17.62 / 0.7843</strong></div>
-        </article>
-
-        <article class="block figure-block qualitative">
-          <h2>Qualitative Results</h2>
-          <img src="assets/qualitative_grid_placeholder.png" alt="SIDL qualitative comparison grid">
-          <p class="caption">Input / D3Net output / GT examples from the 256 best checkpoint.</p>
-        </article>
-
-        <article class="block takeaways">
-          <h2>Takeaways</h2>
-          <ol>
-            <li>D3Net can be adapted to SIDL dirty lens restoration under limited compute.</li>
-            <li>256×256 crop training was the most stable setting.</li>
-            <li>512 refinement suggests patch-size-induced training distribution shift.</li>
-            <li>Hard Dust/Mixed remains the main bottleneck.</li>
-          </ol>
-        </article>
-      </section>
-    </div>
+      <article class="block takeaway">
+        <h2>8. Takeaways</h2>
+        <div class="takeaway-grid">
+          <div><strong>Official result</strong><span>Epoch 73 reaches 24.55 dB / 0.8507 on the leaderboard test set.</span></div>
+          <div><strong>Model scale</strong><span>The submission reports 771 GMACs and 43.8M parameters.</span></div>
+          <div><strong>Future direction</strong><span>Loss-metric mismatch and difficulty-aware training remain open issues.</span></div>
+        </div>
+      </article>
+    </section>
   </main>
 </body>
 </html>
